@@ -1,5 +1,4 @@
 use crate::md_errors::DescribableError;
-use super::token::Token;
 
 #[derive(Debug)]
 pub struct LexicalError {

@@ -1,5 +1,5 @@
 use super::cursor::Cursor;
-use super::token::Node;
+use super::node::Node;
 use super::tree_optimizer::TreeOptimizer;
 
 pub struct Parser<'source> {

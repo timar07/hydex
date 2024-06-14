@@ -1,8 +1,8 @@
 mod cursor;
 mod pos;
 mod parser;
-mod token;
+mod node;
 mod lex_error;
 mod tree_optimizer;
 pub use self::parser::Parser;
-pub use self::token::Node;
+pub use self::node::Node;

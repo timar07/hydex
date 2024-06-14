@@ -4,19 +4,13 @@ use std::ops::Add;
 pub struct Token {
     pub tag: Node,
     pub lexeme: Lexeme,
-    // pub info: DebugInfo
 }
-
-// impl Token {
-//     pub fn get_lexeme(&self) -> String {
-//         self.info.src[self.lexeme.start..self.lexeme.end].to_string()
-//     }
-// }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 #[allow(dead_code)]
+#[repr(i8)]
 pub enum Node {
-    Heading(u8),
+    Heading(u8) = 0,
     TextRun(Vec<Node>),
     Bold(Box<Node>),
     Italic(Box<Node>),
@@ -28,9 +22,14 @@ impl Add for Node {
     type Output = Node;
 
     fn add(self, rhs: Self) -> Self::Output {
-        match [self, rhs] {
-            [Node::Normal(a), Node::Normal(b)] => Node::Normal([a, b].join("")),
-            _ => todo!()
+        match (self, rhs) {
+            (Node::Normal(a), Node::Normal(b)) => Node::Normal(a + &b),
+            (Node::Bold(a), Node::Bold(b)) => Node::Bold(Box::new(*a + *b)),
+            (Node::Italic(a), Node::Italic(b)) => Node::Italic(Box::new(*a + *b)),
+            (Node::Highlight(a), Node::Highlight(b)) => {
+                Node::Highlight(Box::new(*a + *b))
+            },
+            (a, b)=> panic!("Cannot add {:?} and {:?}", a, b)
         }
     }
 }

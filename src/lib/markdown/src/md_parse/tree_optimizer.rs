@@ -1,5 +1,5 @@
 use std::vec;
-use super::token::Node;
+use super::node::Node;
 
 /// Optimizes tree by removing unused nested nodes and
 /// merging same nodes
@@ -7,6 +7,7 @@ pub struct TreeOptimizer;
 
 impl TreeOptimizer {
     pub fn optimize(root: Node) -> Node {
+        dbg!(Node::Normal("asdf".to_string()) == Node::Normal("fdsa".to_string()));
         Self::visit_node(root)
     }
 
@@ -40,18 +41,16 @@ impl TreeOptimizer {
     }
 
     fn merge(items: Vec<Node>) -> Node {
-        if items.len() == 1 {
-            return items[0].clone();
+        match items.len() {
+            1 => items[0].clone(),
+            2 => Self::merge_two(
+                items[0].clone(), items[1].clone()
+            ),
+            _ => Self::merge_two(
+                items[0].clone(),
+                Self::merge(items[1..].to_vec())
+            )
         }
-
-        if items.len() == 2 {
-            return Self::merge_two(items[0].clone(), items[1].clone());
-        }
-
-        Self::merge_two(
-            items[0].clone(),
-            Self::merge(items[1..].to_vec())
-        )
     }
 
     fn merge_two(a: Node, b: Node) -> Node {
