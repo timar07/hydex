@@ -19,6 +19,32 @@ mod tests {
         );
 
         assert_eq!(
+            Parser::from_string("This text is ___really important___.").parse(),
+            Node::TextRun(vec![
+                Node::Normal("This text is ".into()),
+                Node::Bold(Box::new(
+                    Node::Italic(Box::new(
+                        Node::Normal("really important".into())
+                    ))
+                )),
+                Node::Normal(".".into())
+            ])
+        );
+
+        assert_eq!(
+            Parser::from_string("This text is __*really important*__.").parse(),
+            Node::TextRun(vec![
+                Node::Normal("This text is ".into()),
+                Node::Bold(Box::new(
+                    Node::Italic(Box::new(
+                        Node::Normal("really important".into())
+                    ))
+                )),
+                Node::Normal(".".into())
+            ])
+        );
+
+        assert_eq!(
             Parser::from_string("This text is **_really important_**.").parse(),
             Node::TextRun(vec![
                 Node::Normal("This text is ".into()),
@@ -28,6 +54,55 @@ mod tests {
                     ))
                 )),
                 Node::Normal(".".into())
+            ])
+        );
+
+        assert_eq!(
+            Parser::from_string("This is really***very***important text.").parse(),
+            Node::TextRun(vec![
+                Node::Normal("This is really".into()),
+                Node::Bold(Box::new(
+                    Node::Italic(Box::new(
+                        Node::Normal("very".into())
+                    ))
+                )),
+                Node::Normal("important text.".into())
+            ])
+        );
+    }
+
+    #[test]
+    fn emphasis_bold() {
+        assert_eq!(
+            Parser::from_string("I just love **bold text**.").parse(),
+            Node::TextRun(vec![
+                Node::Normal("I just love ".into()),
+                Node::Bold(Box::new(
+                    Node::Normal("bold text".into())
+                )),
+                Node::Normal(".".into())
+            ])
+        );
+
+        assert_eq!(
+            Parser::from_string("I just love __bold text__.").parse(),
+            Node::TextRun(vec![
+                Node::Normal("I just love ".into()),
+                Node::Bold(Box::new(
+                    Node::Normal("bold text".into())
+                )),
+                Node::Normal(".".into())
+            ])
+        );
+
+        assert_eq!(
+            Parser::from_string("Love**is**bold").parse(),
+            Node::TextRun(vec![
+                Node::Normal("Love".into()),
+                Node::Bold(Box::new(
+                    Node::Normal("is".into())
+                )),
+                Node::Normal("bold".into())
             ])
         );
     }
