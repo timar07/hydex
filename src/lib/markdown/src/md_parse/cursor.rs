@@ -1,5 +1,6 @@
 use super::pos::Pos;
 
+#[derive(Clone)]
 pub struct Cursor<'src> {
     src: &'src str,
     pub pos: Pos

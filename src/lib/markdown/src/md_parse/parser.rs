@@ -1,9 +1,13 @@
+use std::borrow::BorrowMut;
+
 use super::cursor::Cursor;
+use super::enclosured::Enclosured;
 use super::node::Node;
+use super::normal_text::{NormalTextParserEscaped, NormalTextParserUnescaped};
 use super::tree_optimizer::TreeOptimizer;
 
-pub struct Parser<'source> {
-    src: Cursor<'source>,
+pub struct Parser<'src> {
+    src: Cursor<'src>,
 }
 
 impl<'a> Parser<'a> {
@@ -14,11 +18,9 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse(&mut self) -> Node {
-        TreeOptimizer::optimize(self.tokenize())
-    }
-
-    pub fn tokenize(&mut self) -> Node {
-        self.parse_text_run()
+        TreeOptimizer::optimize(
+            self.parse_text_run()
+        )
     }
 
     fn parse_text_run(&mut self) -> Node {
@@ -28,9 +30,14 @@ impl<'a> Parser<'a> {
             let token = match self.src.current() {
                 '*' => {
                     if self.src.check_next('*') {
-                        self.parse_bold()
+                        self.parse_enclosured_nested(
+                            "**",
+                            |inner| {
+                                Node::Bold(inner)
+                            }
+                        )
                     } else {
-                        self.parse_enclosured(
+                        self.parse_enclosured_nested(
                             "*",
                             |inner| {
                                 Node::Italic(inner)
@@ -40,14 +47,14 @@ impl<'a> Parser<'a> {
                 },
                 '_' => {
                     if self.src.check_next('_') {
-                        self.parse_enclosured(
+                        self.parse_enclosured_nested(
                             "__",
                             |inner| {
                                 Node::Bold(inner)
                             }
                         )
                     } else {
-                        self.parse_enclosured(
+                        self.parse_enclosured_nested(
                             "_",
                             |inner| {
                                 Node::Italic(inner)
@@ -55,12 +62,28 @@ impl<'a> Parser<'a> {
                         )
                     }
                 },
-                '=' => self.parse_highlight(),
+                '=' => self.parse_enclosured_nested(
+                    "=",
+                    |inner| {
+                        Node::Highlight(inner)
+                    }
+                ),
+                '`' => Node::Code(Box::new(
+                    Enclosured::new(
+                        self.src.borrow_mut(),
+                        "`",
+                        |content| {
+                            NormalTextParserEscaped::new(
+                                Cursor::from_string(content).borrow_mut()
+                            ).parse()
+                        }
+                    ).parse()
+                )),
                 '\\' => {
                     self.src.consume();
-                    self.parse_normal_text()
+                    NormalTextParserEscaped::new(self.src.borrow_mut()).parse()
                 }
-                _ => self.parse_normal_text()
+                _ => NormalTextParserUnescaped::new(self.src.borrow_mut()).parse()
             };
 
             text.push(token);
@@ -69,48 +92,8 @@ impl<'a> Parser<'a> {
         Node::TextRun(text)
     }
 
-    fn parse_bold(&mut self) -> Node {
-        self.parse_enclosured(
-            "**",
-            |inner| {
-                Node::Bold(inner)
-            }
-        )
-    }
 
-    fn parse_highlight(&mut self) -> Node {
-        self.parse_enclosured(
-            "=",
-            |inner| {
-                Node::Highlight(inner)
-            }
-        )
-    }
-
-    fn parse_normal_text(&mut self) -> Node {
-        let start = self.src.pos.index;
-
-        while !self.src.is_eof() &&
-              (Parser::is_normal_char(self.src.current()) ||
-              self.src.prev() == '\\') {
-            self.src.consume();
-        }
-
-        Node::Normal(self.src.slice(start, self.src.pos.index).to_owned())
-    }
-
-    fn is_normal_char(ch: char) -> bool {
-        match ch {
-            '!' | '`' | '*' | '_' |
-            '{' | '}' | '[' | ']' |
-            '<' | '>' | '(' | ')' |
-            '#' | '+' | '-' | '|' |
-            '\\' => false,
-            _ => true
-        }
-    }
-
-    fn parse_enclosured<T>(
+    fn parse_enclosured_nested<T>(
         &mut self,
         enclosure: &'static str,
         result_constructor: T
@@ -118,57 +101,20 @@ impl<'a> Parser<'a> {
     where
         T: Fn(Box<Node>) -> Node
     {
-        self.src.match_curr(enclosure);
-
-        if !self.lookahead(enclosure) {
-            return self.parse_text_run();
-        }
-
-        let start = self.src.pos.index;
-        self.consume_until(enclosure);
-
-        result_constructor(Box::new(
-            Parser::from_string(
-                self.src.slice(start, self.src.pos.index-enclosure.len())
-            ).tokenize()
-        ))
-    }
-
-    fn consume_until(&mut self, enclosure: &'static str) {
-        while !self.src.is_eof() {
-            if self.src.match_curr(&enclosure[..1]) {
-                if self.src.check_curr(enclosure) {
-                    continue;
-                }
-
-                if enclosure.len() > 1 {
-                    if self.src.match_curr(&enclosure[1..]) {
-                        break;
+        result_constructor(
+            Box::new(
+                Enclosured::new(
+                    self.src.borrow_mut(),
+                    enclosure,
+                    |content| {
+                        Parser::from_string(content).parse()
                     }
-
-                    continue;
-                } else {
-                    break;
-                }
-            }
-
-            self.src.consume();
-        }
-    }
-
-    fn lookahead(&self, matcher: &'static str) -> bool {
-        let mut i = self.src.pos.index;
-
-        while i <= self.src.len() - matcher.len() && self.src.char_at(i) != '\n' {
-            if self.src.slice(i, i + matcher.len()) == matcher {
-                return true;
-            }
-
-            i += 1
-        }
-
-        false
+                ).parse()
+            )
+        )
     }
 }
 
-
+pub trait Parsable {
+    fn parse(&mut self) -> Node;
+}

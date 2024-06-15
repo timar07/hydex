@@ -149,4 +149,29 @@ mod tests {
             )),
         );
     }
+
+    #[test]
+    fn emphasis_code() {
+        assert_eq!(
+            Parser::from_string("At the command prompt, type `nano`.").parse(),
+            Node::TextRun(vec![
+                Node::Normal("At the command prompt, type ".into()),
+                Node::Code(Box::new(
+                    Node::Normal("nano".into())
+                )),
+                Node::Normal(".".into())
+            ]),
+        );
+
+        assert_eq!(
+            Parser::from_string("Code: `nano *is* **great**`.").parse(),
+            Node::TextRun(vec![
+                Node::Normal("Code: ".into()),
+                Node::Code(Box::new(
+                    Node::Normal("nano *is* **great**".into())
+                )),
+                Node::Normal(".".into())
+            ]),
+        );
+    }
 }

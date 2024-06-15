@@ -5,5 +5,7 @@ mod parser;
 mod node;
 mod lex_error;
 mod tree_optimizer;
+mod normal_text;
+mod enclosured;
 pub use self::parser::Parser;
 pub use self::node::Node;
