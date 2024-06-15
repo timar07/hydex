@@ -27,12 +27,23 @@ impl<'a> Parser<'a> {
         while !self.src.is_eof() {
             let token = match self.src.current() {
                 '*' => {
-                    if self.src.match_next('*') {
+                    if self.src.check_next('*') {
                         self.parse_bold()
                     } else {
-                        self.parse_italic()
+                        self.parse_enclosured(
+                            "*",
+                            |inner| {
+                                Node::Italic(inner)
+                            }
+                        )
                     }
                 },
+                '_' => self.parse_enclosured(
+                    "_",
+                    |inner| {
+                        Node::Italic(inner)
+                    }
+                ),
                 '=' => self.parse_highlight(),
                 '\\' => {
                     self.src.consume();
@@ -52,15 +63,6 @@ impl<'a> Parser<'a> {
             "**",
             |inner| {
                 Node::Bold(inner)
-            }
-        )
-    }
-
-    fn parse_italic(&mut self) -> Node {
-        self.parse_enclosured(
-            "*",
-            |inner| {
-                Node::Italic(inner)
             }
         )
     }
@@ -101,29 +103,38 @@ impl<'a> Parser<'a> {
     where
         T: Fn(Box<Node>) -> Node
     {
-        self.src.consume();
+        self.src.match_curr(enclosure);
 
         if !self.lookahead(enclosure) {
             return self.parse_text_run();
         }
 
         let start = self.src.pos.index;
-
         self.consume_until(enclosure);
 
         result_constructor(Box::new(
             Parser::from_string(
-                self.src.slice(start, self.src.pos.index-1)
+                self.src.slice(start, self.src.pos.index-enclosure.len())
             ).tokenize()
         ))
     }
 
     fn consume_until(&mut self, enclosure: &'static str) {
         while !self.src.is_eof() {
-            if self.src.match_curr(enclosure)
-            && !self.src.match_next(enclosure.chars().nth(0).unwrap())
-            || self.src.match_curr("\n"){
-                break;
+            if self.src.match_curr(&enclosure[..1]) {
+                if self.src.check_curr(enclosure) {
+                    continue;
+                }
+
+                if enclosure.len() > 1 {
+                    if self.src.match_curr(&enclosure[1..]) {
+                        break;
+                    }
+
+                    continue;
+                } else {
+                    break;
+                }
             }
 
             self.src.consume();
@@ -133,7 +144,7 @@ impl<'a> Parser<'a> {
     fn lookahead(&self, matcher: &'static str) -> bool {
         let mut i = self.src.pos.index;
 
-        while i < self.src.len() - matcher.len() && self.src.char_at(i) != '\n' {
+        while i <= self.src.len() - matcher.len() && self.src.char_at(i) != '\n' {
             if self.src.slice(i, i + matcher.len()) == matcher {
                 return true;
             }

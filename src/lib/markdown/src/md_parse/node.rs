@@ -29,7 +29,7 @@ impl Add for Node {
             (Node::Highlight(a), Node::Highlight(b)) => {
                 Node::Highlight(Box::new(*a + *b))
             },
-            (a, b)=> panic!("Cannot add {:?} and {:?}", a, b)
+            (a, b) => Node::TextRun(vec![a, b])
         }
     }
 }

@@ -7,23 +7,30 @@ pub struct TreeOptimizer;
 
 impl TreeOptimizer {
     pub fn optimize(root: Node) -> Node {
-        dbg!(Node::Normal("asdf".to_string()) == Node::Normal("fdsa".to_string()));
         Self::visit_node(root)
     }
 
     fn visit_node(node: Node) -> Node {
+
         match node {
-            Node::TextRun(ref child) => {
-                if child.len() == 1 {
-                    return child[0].clone();
+            Node::TextRun(ref children) => {
+                if children.len() == 1 {
+                    return Self::visit_node(children[0].clone());
                 }
 
-                Self::merge(
-                    child.iter()
+                Node::TextRun(
+                    children.iter()
                         .map(|node| {
-                            Self::visit_node(node.clone())
+                            let node = Self::visit_node(node.clone());
+
+                            if let Node::TextRun(children) = node {
+                                return children;
+                            }
+
+                            vec![node]
                         })
-                        .collect()
+                        .flatten()
+                        .collect::<Vec<Node>>()
                 )
             }
             // TODO: Remove duplicating code
@@ -54,13 +61,6 @@ impl TreeOptimizer {
     }
 
     fn merge_two(a: Node, b: Node) -> Node {
-        match [&a, &b] {
-            [Node::Normal(a), Node::Normal(b)] => Node::Normal(
-                [a.clone(), b.clone()].join("")
-            ),
-            _ => {
-                Node::TextRun(vec![a, b])
-            }
-        }
+        a + b
     }
 }

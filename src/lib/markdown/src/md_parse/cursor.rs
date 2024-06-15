@@ -21,6 +21,12 @@ impl<'a> Cursor<'a> {
         &self.src[start..end]
     }
 
+    pub fn skip_n(&mut self, n: usize) {
+        for _ in 0..n {
+            self.consume();
+        }
+    }
+
     pub fn consume(&mut self) -> char {
         let ch = self.current();
         self.pos.index += 1;
@@ -35,24 +41,27 @@ impl<'a> Cursor<'a> {
         ch
     }
 
-    pub fn match_next(&mut self, ch: char) -> bool {
-        if self.pos.index + 1 < self.src.len() && self.next() == ch {
-            self.consume();
+    pub fn check_next(&mut self, ch: char) -> bool {
+        self.pos.index + 1 < self.src.len() && self.next() == ch
+    }
+
+    /// Check if the next sequence matches `matcher`.
+    /// If so, consume it.
+    pub fn match_curr(&mut self, matcher: &'static str) -> bool {
+        if self.check_curr(matcher) {
+            self.skip_n(matcher.len());
             return true;
         }
 
         false
     }
 
-    pub fn match_curr(&mut self, matcher: &'static str) -> bool {
+    /// Check if the next sequence matches `matcher`
+    pub fn check_curr(&mut self, matcher: &'static str) -> bool {
+        let start = self.pos.index;
         let end = self.pos.index + matcher.len();
-        // TODO refactor
-        if end < self.src.len() && self.src[self.pos.index..end].to_owned() == matcher {
-            self.consume();
-            return true;
-        }
 
-        false
+        end < self.src.len() && self.src[start..end].to_owned() == matcher
     }
 
     pub fn char_at(&self, i: usize) -> char {

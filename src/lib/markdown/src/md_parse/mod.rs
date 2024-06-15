@@ -1,3 +1,4 @@
+mod tests;
 mod cursor;
 mod pos;
 mod parser;
