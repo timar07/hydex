@@ -38,12 +38,23 @@ impl<'a> Parser<'a> {
                         )
                     }
                 },
-                '_' => self.parse_enclosured(
-                    "_",
-                    |inner| {
-                        Node::Italic(inner)
+                '_' => {
+                    if self.src.check_next('_') {
+                        self.parse_enclosured(
+                            "__",
+                            |inner| {
+                                Node::Bold(inner)
+                            }
+                        )
+                    } else {
+                        self.parse_enclosured(
+                            "_",
+                            |inner| {
+                                Node::Italic(inner)
+                            }
+                        )
                     }
-                ),
+                },
                 '=' => self.parse_highlight(),
                 '\\' => {
                     self.src.consume();
@@ -90,7 +101,11 @@ impl<'a> Parser<'a> {
 
     fn is_normal_char(ch: char) -> bool {
         match ch {
-            '*' | '=' | '_' | '\\' => false,
+            '!' | '`' | '*' | '_' |
+            '{' | '}' | '[' | ']' |
+            '<' | '>' | '(' | ')' |
+            '#' | '+' | '-' | '|' |
+            '\\' => false,
             _ => true
         }
     }
