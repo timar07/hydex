@@ -11,7 +11,6 @@ impl TreeOptimizer {
     }
 
     fn visit_node(node: Node) -> Node {
-
         match node {
             Node::TextRun(ref children) => {
                 if children.len() == 1 {
