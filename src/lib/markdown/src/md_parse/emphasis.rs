@@ -89,6 +89,18 @@ impl<'src, 'a> Parsable for EmphasisParser<'src, 'a> {
                     Node::Highlight(inner)
                 }
             ),
+            '~' => {
+                if self.src.check_next('~') {
+                    self.parse_enclosured_nested(
+                        "~~",
+                        |inner| {
+                            Node::Strikethrough(inner)
+                        }
+                    )
+                } else {
+                    NormalTextParserUnescaped::new(self.src).parse()
+                }
+            }
             '`' => {
                 Node::Code(Box::new(self.parse_code()))
             },

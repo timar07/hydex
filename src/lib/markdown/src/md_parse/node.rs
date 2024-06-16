@@ -15,6 +15,7 @@ pub enum Node {
     Bold(Box<Node>),
     Italic(Box<Node>),
     Highlight(Box<Node>),
+    Strikethrough(Box<Node>),
     Code(Box<Node>),
     Normal(String),
 }

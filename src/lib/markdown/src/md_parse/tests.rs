@@ -201,4 +201,19 @@ mod tests {
             ])
         );
     }
+
+    #[test]
+    fn emphasis_strikethrough() {
+        assert_eq!(
+            Parser::from_string("~~The world is flat.~~").parse(),
+            Node::Strikethrough(Box::new(
+                Node::Normal("The world is flat.".into())
+            ))
+        );
+
+        assert_eq!(
+            Parser::from_string("~Not a strikethrough~").parse(),
+            Node::Normal("~Not a strikethrough~".into())
+        );
+    }
 }
