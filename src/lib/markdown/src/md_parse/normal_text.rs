@@ -15,11 +15,10 @@ impl<'src, 'a> Parsable for NormalTextParserEscaped<'src, 'a> {
         let start = self.src.pos.index;
 
         while !self.src.is_eof() {
-            dbg!("test");
             self.src.consume();
         }
 
-        Node::Normal(self.src.slice(start, self.src.pos.index).to_owned())
+        Node::Normal(self.src[start..self.src.pos.index].to_owned())
     }
 }
 
@@ -58,6 +57,6 @@ impl<'a, 'b> Parsable for NormalTextParserUnescaped<'a, 'b> {
             self.src.consume();
         }
 
-        Node::Normal(self.src.slice(start, self.src.pos.index).to_owned())
+        Node::Normal(self.src[start..self.src.pos.index].to_owned())
     }
 }

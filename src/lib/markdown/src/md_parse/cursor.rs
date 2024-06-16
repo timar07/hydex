@@ -1,3 +1,5 @@
+use std::ops::{Index, Range};
+
 use super::pos::Pos;
 
 #[derive(Clone)]
@@ -14,20 +16,22 @@ impl<'a> Cursor<'a> {
         }
     }
 
-    pub fn len(&self) -> usize {
-        self.src.len()
-    }
-
     pub fn slice(&self, start: usize, end: usize) -> &'a str {
         &self.src[start..end]
     }
 
+    pub fn len(&self) -> usize {
+        self.src.len()
+    }
+
+    // Consume n characters
     pub fn skip_n(&mut self, n: usize) {
         for _ in 0..n {
             self.consume();
         }
     }
 
+    // Get current char and move pointer one step further
     pub fn consume(&mut self) -> char {
         let ch = self.current();
         self.pos.index += 1;
@@ -42,6 +46,7 @@ impl<'a> Cursor<'a> {
         ch
     }
 
+    // Check if the next char matches `ch`
     pub fn check_next(&mut self, ch: char) -> bool {
         self.pos.index + 1 < self.src.len() && self.next() == ch
     }
@@ -85,4 +90,21 @@ impl<'a> Cursor<'a> {
         self.pos.index >= self.src.len()
     }
 
+}
+
+impl<'src> Index<Range<usize>> for Cursor<'src> {
+    type Output = str;
+
+    fn index(&self, range: Range<usize>) -> &'src Self::Output {
+        // Check if the range is within bounds
+        if range.start >= self.src.len() || range.end > self.src.len() {
+            panic!("Range out of bounds: {:?} for string length {}", range, self.src.len());
+        }
+
+        let start = range.start;
+        let end = range.end;
+
+        // Extract the slice from the source string
+        &self.src[start..end]
+    }
 }

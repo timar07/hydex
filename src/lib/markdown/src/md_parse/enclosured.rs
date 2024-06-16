@@ -24,15 +24,11 @@ impl<'src, 'a> Enclosured<'src, 'a> {
                     continue;
                 }
 
-                if enclosure.len() > 1 {
-                    if self.src.match_curr(&enclosure[1..]) {
-                        break;
-                    }
-
-                    continue;
-                } else {
+                if enclosure.len() == 1 || self.src.match_curr(&enclosure[1..]) {
                     break;
                 }
+
+                continue;
             }
 
             self.src.consume();
@@ -43,7 +39,7 @@ impl<'src, 'a> Enclosured<'src, 'a> {
         let mut i = self.src.pos.index;
 
         while i <= self.src.len() - matcher.len() && self.src.char_at(i) != '\n' {
-            if self.src.slice(i, i + matcher.len()) == matcher {
+            if &self.src[i..i + matcher.len()] == matcher {
                 return true;
             }
 
@@ -72,6 +68,5 @@ impl<'src, 'a> Parsable for Enclosured<'src, 'a> {
                 self.src.pos.index-self.enclosure.len()
             ).into()
         )
-
     }
 }
