@@ -41,8 +41,7 @@ impl<'src, 'a> NormalTextParserUnescaped<'src, 'a> {
             '!' | '`' | '*' | '_' |
             '{' | '}' | '[' | ']' |
             '<' | '>' | '(' | ')' |
-            '#' | '+' | '-' | '|' |
-            '\\' => false,
+            '#' | '+' | '|' | '\\' => false,
             _ => true
         }
     }
@@ -53,7 +52,7 @@ impl<'a, 'b> Parsable for NormalTextParserUnescaped<'a, 'b> {
         let start = self.src.pos.index;
 
         while !self.src.is_eof() && self.is_normal_or_escaped() {
-            dbg!(self.src.pos.index);
+            dbg!(self.src.current());
             self.src.consume();
         }
 

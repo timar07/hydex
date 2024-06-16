@@ -180,5 +180,25 @@ mod tests {
                 Node::Normal("There is a literal backtick (`) here.".into())
             )),
         );
+
+        assert_eq!(
+            Parser::from_string("A single backtick in a code span: `` ` ``").parse(),
+            Node::TextRun(vec![
+                Node::Normal("A single backtick in a code span: ".into()),
+                Node::Code(Box::new(
+                    Node::Normal(" ` ".into())
+                ))
+            ])
+        );
+
+        assert_eq!(
+            Parser::from_string("A backtick-delimited string in a code span: `` `foo` ``").parse(),
+            Node::TextRun(vec![
+                Node::Normal("A backtick-delimited string in a code span: ".into()),
+                Node::Code(Box::new(
+                    Node::Normal(" `foo` ".into())
+                ))
+            ])
+        );
     }
 }

@@ -74,7 +74,7 @@ impl<'a> Parser<'a> {
                 '\\' => {
                     self.src.consume();
                     NormalTextParserEscaped::new(self.src.borrow_mut()).parse()
-                }
+                },
                 _ => NormalTextParserUnescaped::new(self.src.borrow_mut()).parse()
             };
 
@@ -91,6 +91,7 @@ impl<'a> Parser<'a> {
             self.src.borrow_mut(),
             &enclosure,
             |content| {
+                dbg!(content);
                 NormalTextParserEscaped::new(
                     Cursor::from_string(content).borrow_mut()
                 ).parse()
