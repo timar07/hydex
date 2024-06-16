@@ -68,17 +68,9 @@ impl<'a> Parser<'a> {
                         Node::Highlight(inner)
                     }
                 ),
-                '`' => Node::Code(Box::new(
-                    Enclosured::new(
-                        self.src.borrow_mut(),
-                        "`",
-                        |content| {
-                            NormalTextParserEscaped::new(
-                                Cursor::from_string(content).borrow_mut()
-                            ).parse()
-                        }
-                    ).parse()
-                )),
+                '`' => {
+                    Node::Code(Box::new(self.parse_code()))
+                },
                 '\\' => {
                     self.src.consume();
                     NormalTextParserEscaped::new(self.src.borrow_mut()).parse()
@@ -90,6 +82,20 @@ impl<'a> Parser<'a> {
         }
 
         Node::TextRun(text)
+    }
+
+    fn parse_code(&mut self) -> Node {
+        let enclosure = if self.src.check_next('`') { "``" } else { "`" };
+
+        Enclosured::new(
+            self.src.borrow_mut(),
+            &enclosure,
+            |content| {
+                NormalTextParserEscaped::new(
+                    Cursor::from_string(content).borrow_mut()
+                ).parse()
+            }
+        ).parse()
     }
 
 

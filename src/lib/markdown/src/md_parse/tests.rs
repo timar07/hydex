@@ -173,5 +173,12 @@ mod tests {
                 Node::Normal(".".into())
             ]),
         );
+
+        assert_eq!(
+            Parser::from_string("``There is a literal backtick (`) here.``").parse(),
+            Node::Code(Box::new(
+                Node::Normal("There is a literal backtick (`) here.".into())
+            )),
+        );
     }
 }

@@ -47,7 +47,7 @@ impl<'a> Cursor<'a> {
     }
 
     // Check if the next char matches `ch`
-    pub fn check_next(&mut self, ch: char) -> bool {
+    pub fn check_next(&self, ch: char) -> bool {
         self.pos.index + 1 < self.src.len() && self.next() == ch
     }
 
