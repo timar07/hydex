@@ -42,7 +42,18 @@ impl TreeOptimizer {
             Node::Highlight(child) => Node::Highlight(
                 Box::new(Self::visit_node(*child))
             ),
-            _ => node
+            Node::Strikethrough(child) => Node::Strikethrough(
+                Box::new(
+                    Self::visit_node(*child)
+                )
+            ),
+            Node::Code(_) => node,
+            Node::Link { label: _, url: _ } => node,
+            Node::Normal(_) => node,
+            Node::Heading(n, child) => Node::Heading(
+                n,
+                Box::new(Self::visit_node(*child))
+            ),
         }
     }
 
