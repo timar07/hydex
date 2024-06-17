@@ -24,6 +24,13 @@ impl<'a> Cursor<'a> {
         self.src.len()
     }
 
+    /// Consume everything up to `\n` inclusive
+    pub fn consume_line(&mut self) -> &'a str {
+        let start = self.pos.index;
+        self.consume_until("\n");
+        &self.src[start..self.pos.index]
+    }
+
     /// Consume characters until `enclosure` is stumbled.
     ///
     /// NOTE:
@@ -50,8 +57,6 @@ impl<'a> Cursor<'a> {
 
             self.consume();
         }
-
-        dbg!(self.slice(self.pos.index, self.len()));
     }
 
     /// Lookahead for `matcher`, bounded by line

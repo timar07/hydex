@@ -1,6 +1,6 @@
+use super::block::BlockParser;
 use super::cursor::Cursor;
 use super::node::Node;
-use super::span::SpanParser;
 use super::tree_optimizer::TreeOptimizer;
 
 pub struct Parser<'src> {
@@ -21,15 +21,15 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_text_run(&mut self) -> Node {
-        let mut spans = vec![];
+        let mut nodes = vec![];
 
         while !self.src.is_eof() {
-            spans.push(
-                SpanParser::new(&mut self.src).parse()
+            nodes.push(
+                BlockParser::new(&mut self.src).parse()
             );
         }
 
-        Node::TextRun(spans)
+        Node::TextRun(nodes)
     }
 }
 

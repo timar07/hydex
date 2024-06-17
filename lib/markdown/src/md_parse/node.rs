@@ -10,7 +10,7 @@ pub struct Token {
 #[allow(dead_code)]
 #[repr(i8)]
 pub enum Node {
-    Heading(u8) = 0,
+    Heading(u8, Box<Node>) = 0,
     Link {
         label: String,
         url: String,

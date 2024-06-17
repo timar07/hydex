@@ -4,6 +4,53 @@ mod tests {
     use crate::md_parse::Parser;
 
     #[test]
+    fn block_heading() {
+        assert_eq!(
+            Parser::from_string("# Heading").parse(),
+            Node::Heading(1, Box::new(Node::Normal(
+                "Heading".into()
+            )))
+        );
+
+        assert_eq!(
+            Parser::from_string("#Heading").parse(),
+            Node::Heading(1, Box::new(Node::Normal(
+                "Heading".into()
+            )))
+        );
+
+        assert_eq!(
+            Parser::from_string("# Heading with *emphasis*").parse(),
+            Node::Heading(1, Box::new(Node::TextRun(vec![
+                Node::Normal(
+                    "Heading with ".into()
+                ),
+                Node::Italic(Box::new(
+                    Node::Normal("emphasis".into())
+                ))
+            ])))
+        );
+
+        assert_eq!(
+            Parser::from_string("## Heading h2").parse(),
+            Node::Heading(2, Box::new(
+                Node::Normal(
+                    "Heading h2".into()
+                ),
+            ))
+        );
+
+        assert_eq!(
+            Parser::from_string("## # Heading").parse(),
+            Node::Heading(2, Box::new(
+                Node::Normal(
+                    "# Heading".into()
+                ),
+            ))
+        );
+    }
+
+    #[test]
     fn span_link() {
         assert_eq!(
             Parser::from_string("[This link](http://example.net/) has no title attribute.").parse(),

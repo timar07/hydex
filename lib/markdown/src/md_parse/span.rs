@@ -1,10 +1,7 @@
 use super::cursor::Cursor;
 use super::emphasis::EmphasisParser;
 use super::enclosured::Enclosured;
-use super::normal_text::{
-    NormalTextParserEscaped,
-    NormalTextParserUnescaped
-};
+use super::normal_text::NormalTextParserEscaped;
 use super::parser::Parsable;
 use super::Node;
 
@@ -51,10 +48,11 @@ impl<'src, 'a> Parsable for SpanParser<'src, 'a> {
     fn parse(&mut self) -> Node {
         match self.src.current().unwrap() {
             '[' => {
+                // FIXME: Doesn't work well if it's `[<..>])(`
                 if self.src.lookahead("(") && self.src.lookahead(")") {
                     self.parse_link()
                 } else {
-                    NormalTextParserUnescaped::new(self.src).parse()
+                    NormalTextParserEscaped::new(self.src).parse()
                 }
             },
             _ => EmphasisParser::new(self.src).parse()
