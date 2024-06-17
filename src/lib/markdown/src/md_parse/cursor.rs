@@ -24,6 +24,21 @@ impl<'a> Cursor<'a> {
         self.src.len()
     }
 
+    // Lookahead for `matcher`, bounded by line
+    pub fn lookahead(&self, matcher: &'static str) -> bool {
+        let mut i = self.pos.index;
+
+        while i <= self.src.len() - matcher.len() && self.char_at(i) != '\n' {
+            if &self.src[i..i + matcher.len()] == matcher {
+                return true;
+            }
+
+            i += 1
+        }
+
+        false
+    }
+
     // Consume n characters
     pub fn skip_n(&mut self, n: usize) {
         for _ in 0..n {
@@ -78,8 +93,12 @@ impl<'a> Cursor<'a> {
         self.src[self.pos.index+1..].chars().next().unwrap()
     }
 
-    pub fn prev(&self) -> char {
-        self.src[self.pos.index-1..].chars().next().unwrap()
+    pub fn prev(&self) -> Option<char> {
+        if self.pos.index > 0 {
+            return Some(self.src[self.pos.index-1..].chars().next().unwrap());
+        }
+
+        None
     }
 
     pub fn current(&self) -> char {
