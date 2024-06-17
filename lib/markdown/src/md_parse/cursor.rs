@@ -29,8 +29,8 @@ impl<'a> Cursor<'a> {
     /// NOTE:
     /// it continues until `enclosure` is **actually** enclosures.
     /// For example:
-    /// ```
-    /// let Cursor::new("some text***");
+    /// ```ignore
+    /// let cursor = Cursor::new("some text***");
     /// cursor.consume_until("**");
     /// ```
     /// will consume `some text*`
@@ -50,18 +50,21 @@ impl<'a> Cursor<'a> {
 
             self.consume();
         }
+
+        dbg!(self.slice(self.pos.index, self.len()));
     }
 
     /// Lookahead for `matcher`, bounded by line
     pub fn lookahead(&self, matcher: &'static str) -> bool {
-        for i in self.pos.index..self.len() - matcher.len() {
-            if self.char_at(i).is_some_and(|c| c != '\n') {
-                break;
-            }
+        let mut i = self.pos.index;
+        let end = self.src.len() - matcher.len();
 
+        while i <= end && self.char_at(i).is_some_and(|c| c != '\n') {
             if &self.src[i..i + matcher.len()] == matcher {
                 return true;
             }
+
+            i += 1
         }
 
         false
