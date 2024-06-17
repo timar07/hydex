@@ -49,7 +49,7 @@ impl<'src, 'a> SpanParser<'src, 'a> {
 
 impl<'src, 'a> Parsable for SpanParser<'src, 'a> {
     fn parse(&mut self) -> Node {
-        match self.src.current() {
+        match self.src.current().unwrap() {
             '[' => {
                 if self.src.lookahead("(") && self.src.lookahead(")") {
                     self.parse_link()

@@ -32,7 +32,7 @@ impl<'src, 'a> NormalTextParserUnescaped<'src, 'a> {
     }
 
     fn is_normal_or_escaped(&self) -> bool {
-        Self::is_normal_char(self.src.current())
+        self.src.current().is_some_and(|c| Self::is_normal_char(c))
         || self.src.prev().is_some_and(|c| c == '\\')
     }
 

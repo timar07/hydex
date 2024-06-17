@@ -50,7 +50,7 @@ impl<'src, 'a> EmphasisParser<'src, 'a> {
 
 impl<'src, 'a> Parsable for EmphasisParser<'src, 'a> {
     fn parse(&mut self) -> Node {
-        match self.src.current() {
+        match self.src.current().unwrap() {
             '*' => {
                 if self.src.check_next('*') {
                     self.parse_nested_emphasis(

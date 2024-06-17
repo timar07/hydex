@@ -26,14 +26,14 @@ impl<'a> Cursor<'a> {
 
     // Lookahead for `matcher`, bounded by line
     pub fn lookahead(&self, matcher: &'static str) -> bool {
-        let mut i = self.pos.index;
+        for i in self.pos.index..self.len() - matcher.len() {
+            if self.char_at(i).is_some_and(|c| c != '\n') {
+                break;
+            }
 
-        while i <= self.src.len() - matcher.len() && self.char_at(i) != '\n' {
             if &self.src[i..i + matcher.len()] == matcher {
                 return true;
             }
-
-            i += 1
         }
 
         false
@@ -42,28 +42,33 @@ impl<'a> Cursor<'a> {
     // Consume n characters
     pub fn skip_n(&mut self, n: usize) {
         for _ in 0..n {
-            self.consume();
+            if self.consume().is_none() {
+                break;
+            }
         }
     }
 
     // Get current char and move pointer one step further
-    pub fn consume(&mut self) -> char {
-        let ch = self.current();
-        self.pos.index += 1;
+    pub fn consume(&mut self) -> Option<char> {
+        if let Some(ch) = self.current() {
+            self.pos.index += 1;
 
-        if ch == '\n' {
-            self.pos.line += 1;
-            self.pos.col = 0;
-        } else {
-            self.pos.col += 1;
+            if ch == '\n' {
+                self.pos.line += 1;
+                self.pos.col = 0;
+            } else {
+                self.pos.col += 1;
+            }
+
+            return Some(ch);
         }
 
-        ch
+        None
     }
 
     // Check if the next char matches `ch`
     pub fn check_next(&self, ch: char) -> bool {
-        self.pos.index + 1 < self.src.len() && self.next() == ch
+        self.next().is_some_and(|c| c == ch)
     }
 
     /// Check if the next sequence matches `matcher`.
@@ -80,17 +85,17 @@ impl<'a> Cursor<'a> {
     /// Check if the next sequence matches `matcher`
     pub fn check_curr(&mut self, matcher: &'static str) -> bool {
         let start = self.pos.index;
-        let end = self.pos.index + matcher.len();
+        let end = start + matcher.len();
 
-        end < self.src.len() && self.src[start..end].to_owned() == matcher
+        end < self.len() && self.src[start..end].to_owned() == matcher
     }
 
-    pub fn char_at(&self, i: usize) -> char {
-        self.src.chars().nth(i).unwrap().clone()
+    pub fn char_at(&self, i: usize) -> Option<char> {
+        self.src.chars().nth(i)
     }
 
-    pub fn next(&self) -> char {
-        self.src[self.pos.index+1..].chars().next().unwrap()
+    pub fn next(&self) -> Option<char> {
+        self.src[self.pos.index+1..].chars().next()
     }
 
     pub fn prev(&self) -> Option<char> {
@@ -101,8 +106,8 @@ impl<'a> Cursor<'a> {
         None
     }
 
-    pub fn current(&self) -> char {
-        self.src[self.pos.index..].chars().next().unwrap()
+    pub fn current(&self) -> Option<char> {
+        self.src[self.pos.index..].chars().next()
     }
 
     pub fn is_eof(&self) -> bool {
