@@ -1,5 +1,5 @@
 use markdown::Markdown;
 
 fn main() {
-    dbg!(Markdown::compile("hello **world *italics*** it's me".to_string()));
+    dbg!(Markdown::parse("[This link](http://example.net/) has no title attribute.".to_string()));
 }
