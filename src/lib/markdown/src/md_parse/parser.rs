@@ -1,6 +1,6 @@
 use super::cursor::Cursor;
-use super::emphasis::EmphasisParser;
 use super::node::Node;
+use super::span::SpanParser;
 use super::tree_optimizer::TreeOptimizer;
 
 pub struct Parser<'src> {
@@ -21,15 +21,15 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_text_run(&mut self) -> Node {
-        let mut text = vec![];
+        let mut spans = vec![];
 
         while !self.src.is_eof() {
-            let token = EmphasisParser::new(&mut self.src).parse();
-
-            text.push(token);
+            spans.push(
+                SpanParser::new(&mut self.src).parse()
+            );
         }
 
-        Node::TextRun(text)
+        Node::TextRun(spans)
     }
 }
 

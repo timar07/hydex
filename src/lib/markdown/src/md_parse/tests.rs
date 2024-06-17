@@ -4,6 +4,20 @@ mod tests {
     use crate::md_parse::Parser;
 
     #[test]
+    fn span_link() {
+        assert_eq!(
+            Parser::from_string("[This link](http://example.net/) has no title attribute.").parse(),
+            Node::TextRun(vec![
+                Node::Link {
+                    label: "This link".into(),
+                    url: "http://example.net/".into()
+                },
+                Node::Normal(" has no title attribute.".into())
+            ])
+        )
+    }
+
+    #[test]
     fn emphasis_mixed() {
         assert_eq!(
             Parser::from_string("This text is ***really important***.").parse(),

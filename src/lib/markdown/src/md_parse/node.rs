@@ -11,6 +11,10 @@ pub struct Token {
 #[repr(i8)]
 pub enum Node {
     Heading(u8) = 0,
+    Link {
+        label: String,
+        url: String,
+    },
     TextRun(Vec<Node>),
     Bold(Box<Node>),
     Italic(Box<Node>),
@@ -32,6 +36,15 @@ impl Add for Node {
                 Node::Highlight(Box::new(*a + *b))
             },
             (a, b) => Node::TextRun(vec![a, b])
+        }
+    }
+}
+
+impl Into<String> for Node {
+    fn into(self) -> String {
+        match self {
+            Node::Normal(s) => s,
+            node => panic!("Unable to convert to string node {:?}", node)
         }
     }
 }
