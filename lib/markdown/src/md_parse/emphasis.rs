@@ -1,4 +1,13 @@
-use super::{cursor::Cursor, enclosured::Enclosured, normal_text::{NormalTextParserEscaped, NormalTextParserUnescaped}, parser::Parsable, Node, Parser};
+use crate::md_ast::Node;
+
+use super::cursor::Cursor;
+use super::enclosured::Enclosured;
+use super::inline::InlineParser;
+use super::parser::Parsable;
+use super::normal_text::{
+    NormalTextParserEscaped,
+    NormalTextParserUnescaped
+};
 
 pub struct EmphasisParser<'src, 'a> {
     src: &'a mut Cursor<'src>
@@ -40,7 +49,9 @@ impl<'src, 'a> EmphasisParser<'src, 'a> {
                     enclosure,
                     enclosure,
                     |content| {
-                        Parser::from_string(content).parse()
+                        InlineParser::new(
+                            &mut Cursor::from_string(content)
+                        ).parse()
                     }
                 ).parse()
             )

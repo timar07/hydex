@@ -1,6 +1,6 @@
+use crate::md_ast::Node;
 use super::block::BlockParser;
 use super::cursor::Cursor;
-use super::node::Node;
 use super::tree_optimizer::TreeOptimizer;
 
 pub struct Parser<'src> {
@@ -15,12 +15,6 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse(&mut self) -> Node {
-        TreeOptimizer::optimize(
-            self.parse_text_run()
-        )
-    }
-
-    fn parse_text_run(&mut self) -> Node {
         let mut nodes = vec![];
 
         while !self.src.is_eof() {
@@ -29,7 +23,7 @@ impl<'a> Parser<'a> {
             );
         }
 
-        Node::TextRun(nodes)
+        TreeOptimizer::optimize(Node::TextRun(nodes))
     }
 }
 

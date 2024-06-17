@@ -1,6 +1,7 @@
-use super::{
-    cursor::Cursor, node::Node, normal_text::NormalTextParserUnescaped, parser::Parsable
-};
+use crate::md_ast::Node;
+use super::cursor::Cursor;
+use super::normal_text::NormalTextParserUnescaped;
+use super::parser::Parsable;
 
 pub struct Enclosured<'src, 'a> {
     src: &'a mut Cursor<'src>,
@@ -21,8 +22,7 @@ impl<'src, 'a> Enclosured<'src, 'a> {
 }
 
 impl<'src, 'a> Parsable for Enclosured<'src, 'a> {
-    fn parse(&mut self) -> Node
-    {
+    fn parse(&mut self) -> Node {
         self.src.match_curr(self.lhs);
 
         if !self.src.lookahead(self.rhs) {

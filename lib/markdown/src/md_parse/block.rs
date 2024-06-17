@@ -1,7 +1,7 @@
 use crate::md_parse::inline::InlineParser;
+use crate::md_ast::Node;
 
 use super::span::SpanParser;
-use super::Node;
 use super::cursor::Cursor;
 use super::parser::Parsable;
 

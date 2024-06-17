@@ -1,8 +1,6 @@
 mod tests;
 mod cursor;
-mod pos;
 mod parser;
-mod node;
 mod tree_optimizer;
 mod emphasis;
 mod span;
@@ -11,4 +9,3 @@ mod inline;
 mod normal_text;
 mod enclosured;
 pub use self::parser::Parser;
-pub use self::node::Node;

@@ -1,8 +1,10 @@
-mod md_compiler;
-mod md_parse;
+mod md_ast;
 mod md_errors;
+mod md_parse;
+mod md_compiler;
 
-use md_parse::{Node, Parser};
+use md_ast::Node;
+use md_parse::Parser;
 use md_compiler::Compiler;
 
 pub struct Markdown;

@@ -1,5 +1,5 @@
 use std::vec;
-use super::node::Node;
+use crate::md_ast::Node;
 
 /// Optimizes tree by removing unused nested nodes and
 /// merging same nodes

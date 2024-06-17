@@ -1,9 +1,9 @@
+use crate::md_ast::Node;
 use super::cursor::Cursor;
 use super::emphasis::EmphasisParser;
 use super::enclosured::Enclosured;
 use super::normal_text::NormalTextParserEscaped;
 use super::parser::Parsable;
-use super::Node;
 
 pub struct SpanParser<'src, 'a> {
     src: &'a mut Cursor<'src>

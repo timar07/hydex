@@ -1,4 +1,4 @@
-use crate::md_parse::Node;
+use crate::md_ast::Node;
 
 pub trait Compilable {
     fn compile(&self) -> String;

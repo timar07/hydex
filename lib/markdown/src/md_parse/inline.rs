@@ -1,7 +1,7 @@
+use crate::md_ast::Node;
 use super::cursor::Cursor;
 use super::parser::Parsable;
 use super::span::SpanParser;
-use super::Node;
 
 pub struct InlineParser<'src, 'a> {
     src: &'a mut Cursor<'src>

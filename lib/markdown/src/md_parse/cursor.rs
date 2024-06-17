@@ -1,6 +1,6 @@
 use std::ops::{Index, Range};
 
-use super::pos::Pos;
+use crate::md_ast::Pos;
 
 #[derive(Clone)]
 pub struct Cursor<'src> {

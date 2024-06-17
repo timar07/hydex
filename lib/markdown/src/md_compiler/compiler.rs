@@ -1,4 +1,4 @@
-use crate::md_parse::Node;
+use crate::md_ast::Node;
 use super::compilable::Compilable;
 
 pub struct Compiler;
