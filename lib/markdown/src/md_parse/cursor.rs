@@ -24,7 +24,35 @@ impl<'a> Cursor<'a> {
         self.src.len()
     }
 
-    // Lookahead for `matcher`, bounded by line
+    /// Consume characters until `enclosure` is stumbled.
+    ///
+    /// NOTE:
+    /// it continues until `enclosure` is **actually** enclosures.
+    /// For example:
+    /// ```
+    /// let Cursor::new("some text***");
+    /// cursor.consume_until("**");
+    /// ```
+    /// will consume `some text*`
+    pub fn consume_until(&mut self, enclosure: &'static str) {
+        while !self.is_eof() {
+            if self.match_curr(&enclosure[..1]) {
+                if self.check_curr(enclosure) {
+                    continue;
+                }
+
+                if enclosure.len() == 1 || self.match_curr(&enclosure[1..]) {
+                    break;
+                }
+
+                continue;
+            }
+
+            self.consume();
+        }
+    }
+
+    /// Lookahead for `matcher`, bounded by line
     pub fn lookahead(&self, matcher: &'static str) -> bool {
         for i in self.pos.index..self.len() - matcher.len() {
             if self.char_at(i).is_some_and(|c| c != '\n') {

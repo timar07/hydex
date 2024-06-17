@@ -18,24 +18,6 @@ impl<'src, 'a> Enclosured<'src, 'a> {
     ) -> Self {
         Self { src, lhs, rhs, content_parser }
     }
-
-    fn consume_until(&mut self, enclosure: &'static str) {
-        while !self.src.is_eof() {
-            if self.src.match_curr(&enclosure[..1]) {
-                if self.src.check_curr(enclosure) {
-                    continue;
-                }
-
-                if enclosure.len() == 1 || self.src.match_curr(&enclosure[1..]) {
-                    break;
-                }
-
-                continue;
-            }
-
-            self.src.consume();
-        }
-    }
 }
 
 impl<'src, 'a> Parsable for Enclosured<'src, 'a> {
@@ -48,7 +30,7 @@ impl<'src, 'a> Parsable for Enclosured<'src, 'a> {
         }
 
         let start = self.src.pos.index;
-        self.consume_until(self.rhs);
+        self.src.consume_until(self.rhs);
 
         (self.content_parser)(
             self.src.slice(
