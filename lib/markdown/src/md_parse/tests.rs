@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use crate::md_parse::Node;
+    use crate::md_ast::Node;
     use crate::md_parse::Parser;
 
     #[test]

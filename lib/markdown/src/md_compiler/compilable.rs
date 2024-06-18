@@ -1,14 +1,27 @@
 use crate::md_ast::Node;
 
+use super::normal_text::NormalTextCompiler;
+
 pub trait Compilable {
     fn compile(&self) -> String;
 }
 
-pub type NodeCollection = Vec<Node>;
+struct NodeCollection<'a> {
+    nodes: &'a Vec<Node>
+}
 
-impl Compilable for NodeCollection {
+impl<'a> NodeCollection<'a> {
+    pub fn new(nodes: &'a Vec<Node>) -> Self {
+        Self {
+            nodes
+        }
+    }
+}
+
+impl<'a> Compilable for NodeCollection<'a> {
     fn compile(&self) -> String {
-        self.iter()
+        self.nodes
+            .iter()
             .map(|child| child.compile())
             .collect()
     }
@@ -17,34 +30,44 @@ impl Compilable for NodeCollection {
 impl Compilable for Node {
     fn compile(&self) -> String {
         match self {
-            Node::TextRun(children) => {
-                children.compile()
-            },
+            Node::TextRun(children) => NodeCollection::new(children).compile(),
             Node::Bold(child) => Enclosured::new(
-                "b",
+                "b".into(),
                 Self::compile(child)
             ).compile(),
             Node::Highlight(child) => Enclosured::new(
-                "mark",
+                "mark".into(),
                 Self::compile(child)
             ).compile(),
             Node::Italic(child) => Enclosured::new(
-                "i",
+                "i".into(),
                 Self::compile(child)
             ).compile(),
-            Node::Normal(text) => text.clone(),
-            node => todo!("{:?}", node)
+            Node::Code(child) => Enclosured::new(
+                "code".into(),
+                Self::compile(child)
+            ).compile(),
+            Node::Strikethrough(child) => Enclosured::new(
+                "s".into(),
+                Self::compile(child)
+            ).compile(),
+            Node::Normal(text) => NormalTextCompiler::new(text.clone()).compile(),
+            Node::Link { label: _, url: _ } => todo!(),
+            Node::Heading(n, child) => Enclosured::new(
+                format!("h{n}"),
+                Self::compile(child)
+            ).compile()
         }
     }
 }
 
 pub struct Enclosured {
-    tag: &'static str,
+    tag: String,
     content: String
 }
 
 impl Enclosured {
-    pub fn new(tag: &'static str, content: String) -> Self {
+    pub fn new(tag: String, content: String) -> Self {
         Self {
             tag,
             content
