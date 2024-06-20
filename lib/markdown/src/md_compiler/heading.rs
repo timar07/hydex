@@ -1,1 +1,0 @@
-impl Compilable for Heading {}

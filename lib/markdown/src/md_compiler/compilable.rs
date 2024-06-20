@@ -1,9 +1,9 @@
-use crate::md_ast::{
-    Node,
-    NodeCollection
-};
+use crate::md_ast::Node;
+use crate::md_ast::NodeCollection;
 
+use super::enclosured::Enclosured;
 use super::normal_text::NormalTextCompiler;
+
 
 pub trait Compilable {
     fn compile(&self) -> String;
@@ -18,57 +18,24 @@ impl<'a> Compilable for NodeCollection<'a> {
     }
 }
 
+macro_rules! compile_enclosured {
+    ($tag:expr, $child:expr) => {
+        Enclosured::new($tag.into(), Self::compile($child)).compile()
+    };
+}
+
 impl Compilable for Node {
     fn compile(&self) -> String {
         match self {
             Node::TextRun(children) => NodeCollection::new(children).compile(),
-            Node::Bold(child) => Enclosured::new(
-                "b".into(),
-                Self::compile(child)
-            ).compile(),
-            Node::Highlight(child) => Enclosured::new(
-                "mark".into(),
-                Self::compile(child)
-            ).compile(),
-            Node::Italic(child) => Enclosured::new(
-                "i".into(),
-                Self::compile(child)
-            ).compile(),
-            Node::Code(child) => Enclosured::new(
-                "code".into(),
-                Self::compile(child)
-            ).compile(),
-            Node::Strikethrough(child) => Enclosured::new(
-                "s".into(),
-                Self::compile(child)
-            ).compile(),
-            Node::Normal(text) => NormalTextCompiler::new(text.clone()).compile(),
+            Node::Bold(child) => compile_enclosured!("b", child),
+            Node::Highlight(child) => compile_enclosured!("mark", child),
+            Node::Italic(child) => compile_enclosured!("i", child),
+            Node::Code(child) => compile_enclosured!("code", child),
+            Node::Strikethrough(child) => compile_enclosured!("s", child),
             Node::Link { label: _, url: _ } => todo!(),
-            Node::Heading(n, child) => Enclosured::new(
-                format!("h{n}"),
-                Self::compile(child)
-            ).compile()
+            Node::Heading(n, child) => compile_enclosured!(format!("h{n}"), child),
+            Node::Normal(text) => NormalTextCompiler::new(text.clone()).compile(),
         }
     }
 }
-
-pub struct Enclosured {
-    tag: String,
-    content: String
-}
-
-impl Enclosured {
-    pub fn new(tag: String, content: String) -> Self {
-        Self {
-            tag,
-            content
-        }
-    }
-}
-
-impl Compilable for Enclosured {
-    fn compile(&self) -> String {
-        format!("<{}>{}</{}>", self.tag, self.content, self.tag)
-    }
-}
-
