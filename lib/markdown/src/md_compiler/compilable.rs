@@ -1,4 +1,7 @@
-use crate::md_ast::Node;
+use crate::md_ast::{
+    Node,
+    NodeCollection
+};
 
 use super::normal_text::NormalTextCompiler;
 
@@ -6,21 +9,9 @@ pub trait Compilable {
     fn compile(&self) -> String;
 }
 
-struct NodeCollection<'a> {
-    nodes: &'a Vec<Node>
-}
-
-impl<'a> NodeCollection<'a> {
-    pub fn new(nodes: &'a Vec<Node>) -> Self {
-        Self {
-            nodes
-        }
-    }
-}
-
 impl<'a> Compilable for NodeCollection<'a> {
     fn compile(&self) -> String {
-        self.nodes
+        self.get_nodes()
             .iter()
             .map(|child| child.compile())
             .collect()
