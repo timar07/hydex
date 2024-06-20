@@ -55,7 +55,7 @@ mod tests {
             Compiler::compile(
                 &Parser::from_string("[This link](http://example.net/) has no title attribute.").parse()
             ),
-            "<a href=\"http://example.net\">This link</a> has no title attribute."
+            "<a href=\"http://example.net/\">This link</a> has no title attribute."
         );
     }
 

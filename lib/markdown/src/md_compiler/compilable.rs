@@ -1,7 +1,8 @@
 use crate::md_ast::Node;
 use crate::md_ast::NodeCollection;
 
-use super::enclosured::Enclosured;
+use super::tag::HTMLAttribute;
+use super::tag::HTMLTag;
 use super::normal_text::NormalTextCompiler;
 
 
@@ -20,7 +21,11 @@ impl<'a> Compilable for NodeCollection<'a> {
 
 macro_rules! compile_enclosured {
     ($tag:expr, $child:expr) => {
-        Enclosured::new($tag.into(), Self::compile($child)).compile()
+        HTMLTag {
+            tag: $tag.into(),
+            content: Some(Self::compile($child)),
+            attrs: None
+        }.compile()
     };
 }
 
@@ -33,7 +38,13 @@ impl Compilable for Node {
             Node::Italic(child) => compile_enclosured!("i", child),
             Node::Code(child) => compile_enclosured!("code", child),
             Node::Strikethrough(child) => compile_enclosured!("s", child),
-            Node::Link { label: _, url: _ } => todo!(),
+            Node::Link { label, url } => HTMLTag {
+                tag: "a".to_string(),
+                attrs: Some(&vec![
+                    HTMLAttribute::Value("href".to_string(), url.clone())
+                ]),
+                content: Some(label.clone()),
+            }.compile(),
             Node::Heading(n, child) => compile_enclosured!(format!("h{n}"), child),
             Node::Normal(text) => NormalTextCompiler::new(text.clone()).compile(),
         }
