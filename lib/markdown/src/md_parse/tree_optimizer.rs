@@ -32,29 +32,20 @@ impl TreeOptimizer {
                         .collect::<Vec<Node>>()
                 )
             }
-            // TODO: Remove duplicating code
-            Node::Italic(child) => Node::Italic(
-                Box::new(Self::visit_node(*child))
-            ),
-            Node::Bold(child) => Node::Bold(
-                Box::new(Self::visit_node(*child))
-            ),
-            Node::Highlight(child) => Node::Highlight(
-                Box::new(Self::visit_node(*child))
-            ),
-            Node::Strikethrough(child) => Node::Strikethrough(
-                Box::new(
-                    Self::visit_node(*child)
-                )
-            ),
-            Node::Code(_) => node,
-            Node::Link { label: _, url: _ } => node,
-            Node::Normal(_) => node,
-            Node::Heading(n, child) => Node::Heading(
-                n,
-                Box::new(Self::visit_node(*child))
-            ),
+            Node::Italic(child) => Self::visit_child_node(child, Node::Italic),
+            Node::Bold(child) => Self::visit_child_node(child, Node::Bold),
+            Node::Highlight(child) => Self::visit_child_node(child, Node::Highlight),
+            Node::Strikethrough(child) => Self::visit_child_node(child, Node::Strikethrough),
+            Node::Heading(n, child) => Self::visit_child_node(child, |c| Node::Heading(n, c)),
+            Node::Code(_) | Node::Link { .. } | Node::Normal(_) => node,
         }
+    }
+
+    fn visit_child_node<F: FnOnce(Box<Node>) -> Node>(
+        node: Box<Node>,
+        constructor: F
+    ) -> Node {
+        constructor(Box::new(Self::visit_node(*node)))
     }
 
     fn merge(items: Vec<Node>) -> Node {
