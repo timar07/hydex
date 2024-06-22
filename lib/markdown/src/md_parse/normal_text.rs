@@ -41,10 +41,10 @@ impl<'src, 'a> NormalTextParserUnescaped<'src, 'a> {
 
     fn is_normal_char(ch: char) -> bool {
         match ch {
-            '!' | '`' | '*' | '_' |
-            '{' | '}' | '[' | ']' |
-            '<' | '>' | '(' | ')' |
-            '+' | '|' | '\\' => false,
+            '`' | '*' | '_' | '{' |
+            '}' | '[' | ']' | '<' |
+            '>' | '(' | ')' | '+' |
+            '|' | '\\' => false,
             _ => true
         }
     }

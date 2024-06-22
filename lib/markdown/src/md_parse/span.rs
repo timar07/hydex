@@ -49,7 +49,7 @@ impl<'src, 'a> Parsable for SpanParser<'src, 'a> {
         match self.src.current().unwrap() {
             '[' => {
                 // FIXME: Doesn't work well if it's `[<..>])(`
-                if self.src.lookahead("(") && self.src.lookahead(")") {
+                if self.src.lookahead_inline("(") && self.src.lookahead_inline(")") {
                     self.parse_link()
                 } else {
                     NormalTextParserEscaped::new(self.src).parse()
