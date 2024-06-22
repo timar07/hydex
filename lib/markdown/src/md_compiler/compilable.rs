@@ -47,6 +47,11 @@ impl Compilable for Node {
             }.compile(),
             Node::Heading(n, child) => compile_enclosured!(format!("h{n}"), child),
             Node::Normal(text) => NormalTextCompiler::new(text.clone()).compile(),
+            Node::Paragraph(children) => HTMLTag {
+                tag: "p".into(),
+                content: Some(NodeCollection::new(children).compile()),
+                attrs: None
+            }.compile(),
         }
     }
 }
