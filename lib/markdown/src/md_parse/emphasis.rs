@@ -1,6 +1,6 @@
 use crate::md_ast::Node;
+use crate::md_lex::Cursor;
 
-use super::cursor::Cursor;
 use super::enclosured::Enclosured;
 use super::inline::InlineParser;
 use super::parser::Parsable;
@@ -9,6 +9,16 @@ use super::normal_text::{
     NormalTextParserUnescaped
 };
 
+/// Parses emphasis
+///
+/// ```bnf
+/// emphasis = bold
+///            | italic
+///            | highlight
+///            | strikethrough
+///            | code
+///            | normal_text
+/// ```
 pub struct EmphasisParser<'src, 'a> {
     src: &'a mut Cursor<'src>
 }

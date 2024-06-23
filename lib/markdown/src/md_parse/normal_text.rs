@@ -1,5 +1,6 @@
 use crate::md_ast::Node;
-use super::cursor::Cursor;
+use crate::md_lex::Cursor;
+
 use super::parser::Parsable;
 
 pub struct NormalTextParserEscaped<'src, 'a> {

@@ -1,10 +1,16 @@
 use crate::md_ast::Node;
-use super::cursor::Cursor;
+use crate::md_lex::Cursor;
+
 use super::emphasis::EmphasisParser;
 use super::enclosured::Enclosured;
 use super::normal_text::NormalTextParserEscaped;
 use super::parser::Parsable;
 
+/// Parse span including text
+///
+/// ```bnf
+/// span = link | emphasis;
+/// ```
 pub struct SpanParser<'src, 'a> {
     src: &'a mut Cursor<'src>
 }

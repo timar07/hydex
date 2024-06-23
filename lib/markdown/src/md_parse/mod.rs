@@ -1,5 +1,5 @@
 mod tests;
-mod cursor;
+mod element;
 mod parser;
 mod tree_optimizer;
 mod emphasis;

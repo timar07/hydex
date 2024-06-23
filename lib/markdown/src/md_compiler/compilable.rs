@@ -2,9 +2,8 @@ use crate::md_ast::Node;
 use crate::md_ast::NodeCollection;
 
 use super::tag::HTMLAttribute;
-use super::tag::HTMLTag;
+use super::tag::HTMLElement;
 use super::normal_text::NormalTextCompiler;
-
 
 pub trait Compilable {
     fn compile(&self) -> String;
@@ -21,7 +20,7 @@ impl<'a> Compilable for NodeCollection<'a> {
 
 macro_rules! compile_enclosured {
     ($tag:expr, $child:expr) => {
-        HTMLTag {
+        HTMLElement {
             tag: $tag.into(),
             content: Some(Self::compile($child)),
             attrs: None
@@ -38,7 +37,7 @@ impl Compilable for Node {
             Node::Italic(child) => compile_enclosured!("i", child),
             Node::Code(child) => compile_enclosured!("code", child),
             Node::Strikethrough(child) => compile_enclosured!("s", child),
-            Node::Link { label, url } => HTMLTag {
+            Node::Link { label, url } => HTMLElement {
                 tag: "a".to_string(),
                 attrs: Some(&vec![
                     HTMLAttribute::Value("href".to_string(), url.clone())
@@ -48,7 +47,7 @@ impl Compilable for Node {
             Node::Heading(n, child) => compile_enclosured!(format!("h{n}"), child),
             Node::Blockquote(child) => compile_enclosured!("blockquote", child),
             Node::Normal(text) => NormalTextCompiler::new(text.clone()).compile(),
-            Node::Paragraph(children) => HTMLTag {
+            Node::Paragraph(children) => HTMLElement {
                 tag: "p".into(),
                 content: Some(NodeCollection::new(children).compile()),
                 attrs: None

@@ -1,4 +1,5 @@
-#[derive(Clone, Copy)]
+/// Represents position in the source file/string
+#[derive(Debug, Clone, Copy)]
 pub struct Pos {
     pub line: usize,
     pub col: usize,

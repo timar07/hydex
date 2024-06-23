@@ -1,39 +1,18 @@
-use crate::md_parse::inline::InlineParser;
+use crate::md_lex::Cursor;
 use crate::md_ast::Node;
 use crate::md_parse::Parser;
 
+use super::inline::InlineParser;
 use super::span::SpanParser;
-use super::cursor::Cursor;
 use super::parser::Parsable;
 
 pub struct BlockParser<'src, 'a> {
-    src: &'a mut Cursor<'src>
+    pub src: &'a mut Cursor<'src>
 }
 
 impl<'src, 'a> BlockParser<'src, 'a> {
     pub fn new(src: &'a mut Cursor<'src>) -> Self {
         Self { src }
-    }
-
-    fn parse_heading(&mut self) -> Node {
-        let mut level = 0;
-
-        while self.src.match_curr("#") {
-            level += 1;
-        }
-
-        self.src.match_curr(" ");
-
-        Node::Heading(
-            level,
-            Box::new(
-                InlineParser::new(
-                    &mut Cursor::from_string(
-                        self.src.consume_line()
-                    )
-                ).parse()
-            )
-        )
     }
 
     fn parse_paragraph(&mut self) -> Node {
