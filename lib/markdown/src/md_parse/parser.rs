@@ -1,6 +1,7 @@
 use crate::md_ast::Node;
+use crate::md_lex::Cursor;
+
 use super::block::BlockParser;
-use super::cursor::Cursor;
 use super::tree_optimizer::TreeOptimizer;
 
 pub struct Parser<'src> {

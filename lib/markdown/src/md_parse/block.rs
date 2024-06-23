@@ -1,8 +1,8 @@
 use crate::md_parse::inline::InlineParser;
+use crate::md_lex::Cursor;
 use crate::md_ast::Node;
 
 use super::span::SpanParser;
-use super::cursor::Cursor;
 use super::parser::Parsable;
 
 pub struct BlockParser<'src, 'a> {

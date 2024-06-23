@@ -1,5 +1,6 @@
 mod md_ast;
 mod md_errors;
+mod md_lex;
 mod md_parse;
 mod md_compiler;
 

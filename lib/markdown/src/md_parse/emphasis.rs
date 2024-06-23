@@ -1,6 +1,6 @@
 use crate::md_ast::Node;
+use crate::md_lex::Cursor;
 
-use super::cursor::Cursor;
 use super::enclosured::Enclosured;
 use super::inline::InlineParser;
 use super::parser::Parsable;
