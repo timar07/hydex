@@ -7,3 +7,7 @@ edition = "2021"
 
 [dependencies]
 markdown = { path = "./lib/markdown" }
+
+[[test]]
+name = "markdown"
+path = "./lib/markdown/src/lib.rs"
