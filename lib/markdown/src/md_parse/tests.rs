@@ -6,6 +6,39 @@ mod tests {
     use crate::md_parse::Parser;
 
     #[test]
+    fn block_blockquote() {
+        assert_eq!(
+            Parser::from_string("> Hello, world!").parse(),
+            Node::Blockquote(
+                Box::new(
+                    Node::Paragraph(vec![
+                        Node::Normal("Hello, world!".into())
+                    ])
+                )
+            )
+        );
+
+        assert_eq!(
+            Parser::from_string(
+                "> Hello, world!\n\
+                > This is multiline quote\n\
+                >\n\
+                > With paragraphs"
+            ).parse(),
+            Node::Blockquote(
+                Box::new(Node::TextRun(vec![
+                    Node::Paragraph(vec![
+                        Node::Normal("Hello, world! This is multiline quote".into())
+                    ]),
+                    Node::Paragraph(vec![
+                        Node::Normal("With paragraphs".into())
+                    ])
+                ]))
+            )
+        );
+    }
+
+    #[test]
     fn block_paragraph() {
         assert_eq!(
             Parser::from_string(
@@ -15,6 +48,15 @@ mod tests {
             Node::TextRun(vec![
                 Node::Paragraph(vec![Node::Normal("This is just a".into())]),
                 Node::Paragraph(vec![Node::Normal("simple paragraph".into())]),
+            ])
+        );
+
+        assert_eq!(
+            Parser::from_string(
+                "This is just a single\nparagraph"
+            ).parse(),
+            Node::Paragraph(vec![
+                Node::Normal("This is just a single paragraph".into())
             ])
         )
     }
