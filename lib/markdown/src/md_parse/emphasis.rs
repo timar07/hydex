@@ -9,6 +9,16 @@ use super::normal_text::{
     NormalTextParserUnescaped
 };
 
+/// Parses emphasis
+///
+/// ```bnf
+/// emphasis = bold
+///            | italic
+///            | highlight
+///            | strikethrough
+///            | code
+///            | normal_text
+/// ```
 pub struct EmphasisParser<'src, 'a> {
     src: &'a mut Cursor<'src>
 }

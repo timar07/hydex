@@ -1,8 +1,7 @@
 use std::vec;
 use crate::md_ast::Node;
 
-/// Optimizes tree by removing unused nested nodes and
-/// merging same nodes
+/// Optimizes tree by removing unused nested nodes
 pub struct TreeOptimizer;
 
 impl TreeOptimizer {
@@ -46,22 +45,5 @@ impl TreeOptimizer {
         constructor: F
     ) -> Node {
         constructor(Box::new(Self::visit_node(*node)))
-    }
-
-    fn merge(items: Vec<Node>) -> Node {
-        match items.len() {
-            1 => items[0].clone(),
-            2 => Self::merge_two(
-                items[0].clone(), items[1].clone()
-            ),
-            _ => Self::merge_two(
-                items[0].clone(),
-                Self::merge(items[1..].to_vec())
-            )
-        }
-    }
-
-    fn merge_two(a: Node, b: Node) -> Node {
-        a + b
     }
 }

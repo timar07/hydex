@@ -4,6 +4,11 @@ use crate::md_lex::Cursor;
 use super::normal_text::NormalTextParserUnescaped;
 use super::parser::Parsable;
 
+/// Parses enclosured syntax.
+///
+/// ```bnf
+/// enclosured = lhs content rhs;
+/// ```
 pub struct Enclosured<'src, 'a> {
     src: &'a mut Cursor<'src>,
     lhs: &'static str,

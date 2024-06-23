@@ -2,14 +2,32 @@ use core::fmt;
 
 use super::compilable::Compilable;
 
+/// Represents single HTML element with following grammar:
+/// ```bnf
+/// tag = single | enclosed;
+/// single = "<" OTAG ">" content "<" CTAG ">";
+/// enclosed = "<" OTAG "\>";
+/// OTAG = tag WHITESPACE attrs;
+/// CTAG = tag;
+/// ```
 #[derive(Debug)]
-pub struct HTMLTag<'a> {
+pub struct HTMLElement<'a> {
+    /// Tag name.
+    ///
+    /// Warning: it **does not** require tag name to exist.
     pub tag: String,
+
+    /// Element attributes with following grammar:
+    /// ```bnf
+    /// attrs = ( attr ( WHITESPACE attr )* )?;
+    /// ```
     pub attrs: Option<&'a Vec<HTMLAttribute>>,
+
+    /// Element content
     pub content: Option<String>
 }
 
-impl<'a> Compilable for HTMLTag<'a> {
+impl<'a> Compilable for HTMLElement<'a> {
     fn compile(&self) -> String {
         let attrs_str = match self.attrs {
             Some(attrs) => format!(" {}", (*attrs).compile()),
@@ -44,10 +62,17 @@ impl Compilable for Vec<HTMLAttribute> {
     }
 }
 
-/// Represents a HTML Attribute
+/// Represents a HTML Attribute with following grammar:
+/// ```bnf
+/// attr = boolean | value;
+/// boolean = ;
+/// value = ATTR_NAME "=" STRING;
+/// ATTR_NAME = ( LOWERCASE_LETTER | "-" )*;
+/// ```
 #[derive(Clone, Debug)]
 pub enum HTMLAttribute {
     /// Represents attribute that has specific value.
+    ///
     /// For example `<a href="...">...</a>`
     Value(String, String),
 

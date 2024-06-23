@@ -14,6 +14,9 @@ impl<'src, 'a> BlockParser<'src, 'a> {
         Self { src }
     }
 
+    /// ```bnf
+    /// heading = ( "#" )* inline;
+    /// ```
     fn parse_heading(&mut self) -> Node {
         let mut level = 0;
 
@@ -21,7 +24,7 @@ impl<'src, 'a> BlockParser<'src, 'a> {
             level += 1;
         }
 
-        self.src.match_curr(" ");
+        self.src.match_curr(" "); // TODO: Add pedantic warning
 
         Node::Heading(
             level,
