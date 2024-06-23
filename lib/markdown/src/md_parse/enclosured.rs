@@ -31,12 +31,12 @@ impl<'src, 'a> Parsable for Enclosured<'src, 'a> {
     fn parse(&mut self) -> Node {
         self.src.match_curr(self.lhs);
 
-        if !self.src.lookahead(self.rhs) {
+        if !self.src.lookahead_inline(self.rhs) {
             return NormalTextParserUnescaped::new(self.src).parse();
         }
 
         let start = self.src.pos.index;
-        self.src.consume_until(self.rhs);
+        self.src.consume_enclosured(self.rhs);
 
         (self.content_parser)(
             self.src.slice(

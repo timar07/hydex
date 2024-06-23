@@ -55,7 +55,7 @@ mod tests {
             Compiler::compile(
                 &Parser::from_string("[This link](http://example.net/) has no title attribute.").parse()
             ),
-            "<a href=\"http://example.net/\">This link</a> has no title attribute."
+            "<p><a href=\"http://example.net/\">This link</a> has no title attribute.</p>"
         );
     }
 
@@ -65,35 +65,35 @@ mod tests {
             Compiler::compile(
                 &Parser::from_string("This text is ***really important***.").parse()
             ),
-            "This text is <b><i>really important</i></b>."
+            "<p>This text is <b><i>really important</i></b>.</p>"
         );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("This text is ___really important___.").parse()
             ),
-            "This text is <b><i>really important</i></b>."
+            "<p>This text is <b><i>really important</i></b>.</p>"
         );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("This text is __*really important*__.").parse()
             ),
-            "This text is <b><i>really important</i></b>."
+            "<p>This text is <b><i>really important</i></b>.</p>"
         );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("This text is **_really important_**.").parse()
             ),
-            "This text is <b><i>really important</i></b>."
+            "<p>This text is <b><i>really important</i></b>.</p>"
         );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("This is really***very***important text.").parse()
             ),
-            "This is really<b><i>very</i></b>important text."
+            "<p>This is really<b><i>very</i></b>important text.</p>"
         );
     }
 
@@ -103,21 +103,21 @@ mod tests {
             Compiler::compile(
                 &Parser::from_string("I just love **bold text**.").parse()
             ),
-            "I just love <b>bold text</b>."
+            "<p>I just love <b>bold text</b>.</p>"
         );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("I just love __bold text__.").parse()
             ),
-            "I just love <b>bold text</b>."
+            "<p>I just love <b>bold text</b>.</p>"
         );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("Love**is**bold").parse()
             ),
-            "Love<b>is</b>bold"
+            "<p>Love<b>is</b>bold</p>"
         );
     }
 
@@ -127,28 +127,28 @@ mod tests {
             Compiler::compile(
                 &Parser::from_string("Italicized text is the *cat's meow*.").parse()
             ),
-            "Italicized text is the <i>cat's meow</i>."
+            "<p>Italicized text is the <i>cat's meow</i>.</p>"
         );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("Italicized text is the _cat's meow_.").parse()
             ),
-            "Italicized text is the <i>cat's meow</i>."
+            "<p>Italicized text is the <i>cat's meow</i>.</p>"
         );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("A*cat*meow").parse()
             ),
-            "A<i>cat</i>meow"
+            "<p>A<i>cat</i>meow</p>"
         );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("*italic*").parse()
             ),
-            "<i>italic</i>"
+            "<p><i>italic</i></p>"
         );
     }
 
@@ -158,35 +158,35 @@ mod tests {
             Compiler::compile(
                 &Parser::from_string("At the command prompt, type `nano`.").parse()
             ),
-            "At the command prompt, type <code>nano</code>."
+            "<p>At the command prompt, type <code>nano</code>.</p>"
         );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("Code: `nano *is* **great**`.").parse()
             ),
-            "Code: <code>nano *is* **great**</code>."
+            "<p>Code: <code>nano *is* **great**</code>.</p>"
         );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("``There is a literal backtick (`) here.``").parse()
             ),
-            "<code>There is a literal backtick (`) here.</code>"
+            "<p><code>There is a literal backtick (`) here.</code></p>"
         );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("A single backtick in a code span: `` ` ``").parse()
             ),
-            "A single backtick in a code span: <code> ` </code>"
+            "<p>A single backtick in a code span: <code> ` </code></p>"
         );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("A backtick-delimited string in a code span: `` `foo` ``").parse()
             ),
-            "A backtick-delimited string in a code span: <code> `foo` </code>"
+            "<p>A backtick-delimited string in a code span: <code> `foo` </code></p>"
         );
     }
 
@@ -194,7 +194,7 @@ mod tests {
     fn emphasis_strikethrough() {
         assert_eq!(
             Compiler::compile(&Parser::from_string("~~The world is flat.~~").parse()),
-            "<s>The world is flat.</s>"
+            "<p><s>The world is flat.</s></p>"
         );
     }
 }

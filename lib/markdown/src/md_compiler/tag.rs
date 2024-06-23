@@ -34,8 +34,6 @@ impl<'a> Compilable for HTMLElement<'a> {
             _ => "".to_string()
         };
 
-        dbg!(&attrs_str);
-
         if let Some(content) = &self.content {
             format!(
                 "<{}{attrs_str}>{content}</{}>",

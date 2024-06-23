@@ -24,10 +24,14 @@ impl<'a> Cursor<'a> {
         self.src.len()
     }
 
-    /// Consume everything up to `\n` inclusive
+    /// Consume everything up to `\n` (not inclusive).
     pub fn consume_line(&mut self) -> &'a str {
         let start = self.pos.index;
-        self.consume_until("\n");
+
+        while !self.is_eof() && !self.check_curr("\n") {
+            self.consume();
+        }
+
         &self.src[start..self.pos.index]
     }
 
@@ -41,7 +45,7 @@ impl<'a> Cursor<'a> {
     /// cursor.consume_until("**");
     /// ```
     /// will consume `some text*`
-    pub fn consume_until(&mut self, enclosure: &'static str) {
+    pub fn consume_enclosured(&mut self, enclosure: &'static str) {
         while !self.is_eof() {
             if self.match_curr(&enclosure[..1]) {
                 if self.check_curr(enclosure) {
@@ -59,12 +63,39 @@ impl<'a> Cursor<'a> {
         }
     }
 
+    /// Consume until `seq` is stumbled.
+    pub fn consume_until(&mut self, seq: &'static str) -> &'a str {
+        let start = self.pos.index;
+
+        while !self.is_eof() && !self.match_curr(seq) {
+            self.consume();
+        }
+
+        &self.src[start..self.pos.index]
+    }
+
     /// Lookahead for `matcher`, bounded by line
-    pub fn lookahead(&self, matcher: &'static str) -> bool {
+    pub fn lookahead_inline(&self, matcher: &'static str) -> bool {
         let mut i = self.pos.index;
         let end = self.src.len() - matcher.len();
 
         while i <= end && self.char_at(i).is_some_and(|c| c != '\n') {
+            if &self.src[i..i + matcher.len()] == matcher {
+                return true;
+            }
+
+            i += 1
+        }
+
+        false
+    }
+
+    /// Lookahead for `matcher`
+    pub fn lookahead(&self, matcher: &'static str) -> bool {
+        let mut i = self.pos.index;
+        let end = self.src.len() - matcher.len();
+
+        while i <= end && self.char_at(i).is_some() {
             if &self.src[i..i + matcher.len()] == matcher {
                 return true;
             }
@@ -144,6 +175,10 @@ impl<'a> Cursor<'a> {
 
     pub fn current(&self) -> Option<char> {
         self.src[self.pos.index..].chars().next()
+    }
+
+    pub fn is_start(&self) -> bool {
+        self.pos.index == 0
     }
 
     pub fn is_eof(&self) -> bool {
