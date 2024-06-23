@@ -12,7 +12,26 @@ impl NormalTextCompiler {
 
 impl Compilable for NormalTextCompiler {
     fn compile(&self) -> String {
-        // TODO: Escape HTML characters
-        self.content.clone()
+        html_escape_string(self.content.clone())
     }
+}
+
+fn html_escape_string(s: String) -> String {
+    let mut dest = String::new();
+
+    s.chars().for_each(|c| {
+        let raw_char = c.to_string();
+        let esc_char = match c {
+            '&' => "&amp;",
+            '<' => "&lt;",
+            '>' => "&gt;",
+            '"' => "&quot",
+            '\'' => "&#39",
+            _ => &raw_char
+        };
+
+        dest.push_str(esc_char);
+    });
+
+    dest
 }
