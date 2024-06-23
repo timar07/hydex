@@ -64,10 +64,14 @@ impl<'a> Cursor<'a> {
     }
 
     /// Consume until `seq` is stumbled.
-    pub fn consume_until(&mut self, seq: &'static str) {
+    pub fn consume_until(&mut self, seq: &'static str) -> &'a str {
+        let start = self.pos.index;
+
         while !self.is_eof() && !self.match_curr(seq) {
             self.consume();
         }
+
+        &self.src[start..self.pos.index]
     }
 
     /// Lookahead for `matcher`, bounded by line

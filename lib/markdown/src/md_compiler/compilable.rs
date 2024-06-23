@@ -46,6 +46,7 @@ impl Compilable for Node {
                 content: Some(label.clone()),
             }.compile(),
             Node::Heading(n, child) => compile_enclosured!(format!("h{n}"), child),
+            Node::Blockquote(child) => compile_enclosured!("blockquote", child),
             Node::Normal(text) => NormalTextCompiler::new(text.clone()).compile(),
             Node::Paragraph(children) => HTMLTag {
                 tag: "p".into(),

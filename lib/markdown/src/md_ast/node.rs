@@ -12,6 +12,7 @@ pub struct Token {
 pub enum Node {
     Heading(u8, Box<Node>) = 0,
     Paragraph(Vec<Node>),
+    Blockquote(Box<Node>),
     Link {
         label: String,
         url: String,

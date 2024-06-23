@@ -1,5 +1,6 @@
 use crate::md_parse::inline::InlineParser;
 use crate::md_ast::Node;
+use crate::md_parse::Parser;
 
 use super::span::SpanParser;
 use super::cursor::Cursor;
@@ -36,22 +37,42 @@ impl<'src, 'a> BlockParser<'src, 'a> {
     }
 
     fn parse_paragraph(&mut self) -> Node {
-        let mut nodes = vec![];
+        let mut paragraph_content = vec![];
 
         while !self.src.is_eof() {
-            self.src.match_curr("\n\n");
+            paragraph_content.push(self.src.consume_line());
+            self.src.match_curr("\n");
 
-            nodes.push(SpanParser::new(
-                &mut Cursor::from_string(self.src.consume_line())
-            ).parse());
-
-            if self.src.check_curr("\n\n") {
-                dbg!(self.src.slice(self.src.pos.index, self.src.len()));
+            if self.src.match_curr("\n") {
                 break;
             }
         }
 
-        Node::Paragraph(nodes)
+        Node::Paragraph(vec![
+            InlineParser::new(
+                &mut Cursor::from_string(dbg!(&paragraph_content.join(" ")))
+            ).parse()
+        ])
+    }
+
+    fn parse_blockquote(&mut self) -> Node {
+        let mut content = String::new();
+
+        while self.src.match_curr(">") {
+            self.src.match_curr(" ");
+            content.push_str(dbg!(&self.src.consume_until("\n")));
+            self.src.match_curr("\n");
+        }
+
+        dbg!(&content);
+
+        Node::Blockquote(
+            Box::new(
+                Parser::from_string(
+                    &content
+                ).parse()
+            )
+        )
     }
 }
 
@@ -59,26 +80,18 @@ impl<'src, 'a> Parsable for BlockParser<'src, 'a> {
     fn parse(&mut self) -> Node {
         match self.src.current().unwrap() {
             '#' => self.parse_heading(),
+            '>' => self.parse_blockquote(),
             '\n' => {
+                dbg!(self.src.slice(self.src.pos.index, self.src.len()));
                 if self.src.check_next('\n') {
+                    self.src.match_curr("\n\n");
                     self.parse_paragraph()
                 } else {
                     SpanParser::new(&mut self.src).parse()
                 }
-            }
-            _ if self.src.is_start() => {
-                Node::Paragraph(vec![
-                    InlineParser::new(
-                        &mut Cursor::from_string(self.src.consume_line())
-                    ).parse()
-                ])
             },
             _ => {
-                if self.src.lookahead("\n\n") {
-                    self.parse_paragraph()
-                } else {
-                    SpanParser::new(&mut self.src).parse()
-                }
+                self.parse_paragraph()
             }
         }
     }
