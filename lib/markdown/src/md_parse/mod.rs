@@ -6,6 +6,5 @@ mod emphasis;
 mod span;
 mod block;
 mod inline;
-mod normal_text;
 mod enclosured;
 pub use self::parser::Parser;

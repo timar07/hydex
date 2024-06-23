@@ -1,7 +1,7 @@
 use crate::md_ast::Node;
 use crate::md_lex::Cursor;
 
-use super::normal_text::NormalTextParserUnescaped;
+use crate::md_parse::element::NormalTextParserUnescaped;
 use super::parser::Parsable;
 
 /// Parses enclosured syntax.

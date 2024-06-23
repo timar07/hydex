@@ -4,7 +4,7 @@ use crate::md_lex::Cursor;
 use super::enclosured::Enclosured;
 use super::inline::InlineParser;
 use super::parser::Parsable;
-use super::normal_text::{
+use super::element::{
     NormalTextParserEscaped,
     NormalTextParserUnescaped
 };

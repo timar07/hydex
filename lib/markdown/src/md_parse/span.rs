@@ -1,9 +1,8 @@
 use crate::md_ast::Node;
 use crate::md_lex::Cursor;
 
+use super::element::NormalTextParserEscaped;
 use super::emphasis::EmphasisParser;
-use super::enclosured::Enclosured;
-use super::normal_text::NormalTextParserEscaped;
 use super::parser::Parsable;
 
 /// Parse span including text
@@ -12,41 +11,12 @@ use super::parser::Parsable;
 /// span = link | emphasis;
 /// ```
 pub struct SpanParser<'src, 'a> {
-    src: &'a mut Cursor<'src>
+    pub src: &'a mut Cursor<'src>
 }
 
 impl<'src, 'a> SpanParser<'src, 'a> {
     pub fn new(src: &'a mut Cursor<'src>) -> Self {
         Self { src }
-    }
-
-    fn parse_link(&mut self) -> Node {
-        let label = Enclosured::new(
-            self.src,
-            "[",
-            "]",
-            |inner| {
-                NormalTextParserEscaped::new(
-                    &mut Cursor::from_string(inner)
-                ).parse()
-            }
-        ).parse();
-
-        let url = Enclosured::new(
-            self.src,
-            "(",
-            ")",
-            |inner| {
-                NormalTextParserEscaped::new(
-                    &mut Cursor::from_string(inner)
-                ).parse()
-            }
-        ).parse();
-
-        Node::Link {
-            label: label.into(),
-            url: url.into()
-        }
     }
 }
 
