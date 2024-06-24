@@ -52,6 +52,16 @@ impl Compilable for Node {
                 content: Some(NodeCollection::new(children).compile()),
                 attrs: None
             }.compile(),
+            Node::UnorderedList(children) => HTMLElement {
+                tag: "ul".into(),
+                content: Some(
+                    children
+                        .iter()
+                        .map(|li| compile_enclosured!("li", li))
+                        .collect()
+                ),
+                attrs: None
+            }.compile(),
         }
     }
 }

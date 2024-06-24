@@ -14,7 +14,7 @@ public-facing functionality.
 - - [x] Heading
 - - [x] Blockquote
 - - [ ] Ordered list
-- - [ ] Unordered list
+- - [x] Unordered list
 - - [ ] Horizontal Rule
 
 - [ ] Span

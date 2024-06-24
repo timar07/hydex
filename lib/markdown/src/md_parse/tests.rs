@@ -6,6 +6,75 @@ mod tests {
     use crate::md_parse::Parser;
 
     #[test]
+    fn block_ulist() {
+        assert_eq!(
+            Parser::from_string("- Hello, world!").parse(),
+            Node::UnorderedList(vec![
+                Node::Paragraph(vec![
+                    Node::Normal("Hello, world!".into())
+                ])
+            ])
+        );
+
+        assert_eq!(
+            Parser::from_string("* Hello, world!").parse(),
+            Node::UnorderedList(vec![
+                Node::Paragraph(vec![
+                    Node::Normal("Hello, world!".into())
+                ])
+            ])
+        );
+
+        assert_eq!(
+            Parser::from_string(
+                "- list item 1\n- list item 2"
+            ).parse(),
+            Node::UnorderedList(vec![
+                Node::Paragraph(vec![
+                    Node::Normal("list item 1".into())
+                ]),
+                Node::Paragraph(vec![
+                    Node::Normal("list item 2".into())
+                ])
+            ])
+        );
+
+        assert_eq!(
+            Parser::from_string(
+                "- list item 1\n* list item 2"
+            ).parse(),
+            Node::UnorderedList(vec![
+                Node::Paragraph(vec![
+                    Node::Normal("list item 1".into())
+                ]),
+                Node::Paragraph(vec![
+                    Node::Normal("list item 2".into())
+                ])
+            ])
+        );
+
+        assert_eq!(
+            Parser::from_string(
+                "- list item 1\n\
+                - list item 2\n\
+                \n\
+                - list item 3"
+            ).parse(),
+            Node::UnorderedList(vec![
+                Node::Paragraph(vec![
+                    Node::Normal("list item 1".into())
+                ]),
+                Node::Paragraph(vec![
+                    Node::Normal("list item 2".into())
+                ]),
+                Node::Paragraph(vec![
+                    Node::Normal("list item 3".into())
+                ])
+            ])
+        );
+    }
+
+    #[test]
     fn block_blockquote() {
         assert_eq!(
             Parser::from_string("> Hello, world!").parse(),

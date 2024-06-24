@@ -4,6 +4,7 @@ pub enum Node {
     Heading(u8, Box<Node>),
     Paragraph(Vec<Node>),
     Blockquote(Box<Node>),
+    UnorderedList(Vec<Node>),
     Link {
         label: String,
         url: String,

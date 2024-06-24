@@ -25,6 +25,12 @@ impl TreeOptimizer {
                 children,
                 Node::Paragraph
             ),
+            Node::UnorderedList(ref children) => {
+                Self::visit_child_collection(
+                    children,
+                    Node::UnorderedList
+                )
+            },
             Node::Italic(child) => Self::visit_child_node(child, Node::Italic),
             Node::Bold(child) => Self::visit_child_node(child, Node::Bold),
             Node::Highlight(child) => Self::visit_child_node(child, Node::Highlight),
