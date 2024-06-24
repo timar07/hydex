@@ -44,14 +44,11 @@ impl<'src, 'a> EmphasisParser<'src, 'a> {
         ).parse()
     }
 
-    fn parse_nested_emphasis<T>(
+    fn parse_nested_emphasis<F: FnOnce(Box<Node>) -> Node>(
         &mut self,
         enclosure: &'static str,
-        result_constructor: T
-    ) -> Node
-    where
-        T: Fn(Box<Node>) -> Node
-    {
+        result_constructor: F
+    ) -> Node {
         result_constructor(
             Box::new(
                 Enclosured::new(
@@ -74,52 +71,22 @@ impl<'src, 'a> Parsable for EmphasisParser<'src, 'a> {
         match self.src.current().unwrap() {
             '*' => {
                 if self.src.check_next('*') {
-                    self.parse_nested_emphasis(
-                        "**",
-                        |inner| {
-                            Node::Bold(inner)
-                        }
-                    )
+                    self.parse_nested_emphasis("**", Node::Bold)
                 } else {
-                    self.parse_nested_emphasis(
-                        "*",
-                        |inner| {
-                            Node::Italic(inner)
-                        }
-                    )
+                    self.parse_nested_emphasis("*", Node::Italic)
                 }
             },
             '_' => {
                 if self.src.check_next('_') {
-                    self.parse_nested_emphasis(
-                        "__",
-                        |inner| {
-                            Node::Bold(inner)
-                        }
-                    )
+                    self.parse_nested_emphasis("__", Node::Bold)
                 } else {
-                    self.parse_nested_emphasis(
-                        "_",
-                        |inner| {
-                            Node::Italic(inner)
-                        }
-                    )
+                    self.parse_nested_emphasis("_", Node::Italic)
                 }
             },
-            '=' => self.parse_nested_emphasis(
-                "=",
-                |inner| {
-                    Node::Highlight(inner)
-                }
-            ),
+            '=' => self.parse_nested_emphasis("=", Node::Highlight),
             '~' => {
                 if self.src.check_next('~') {
-                    self.parse_nested_emphasis(
-                        "~~",
-                        |inner| {
-                            Node::Strikethrough(inner)
-                        }
-                    )
+                    self.parse_nested_emphasis("~~", Node::Strikethrough)
                 } else {
                     NormalTextParserUnescaped::new(self.src).parse()
                 }
