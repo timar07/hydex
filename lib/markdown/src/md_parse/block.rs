@@ -19,6 +19,13 @@ impl<'src, 'a> Parsable for BlockParser<'src, 'a> {
         match self.src.current().unwrap() {
             '#' => self.parse_heading(),
             '>' => self.parse_blockquote(),
+            '-' | '*' => {
+                if self.src.check_next(' ') {
+                    self.parse_unordered_list()
+                } else {
+                    self.parse_paragraph()
+                }
+            }
             '\n' => {
                 if self.src.check_next('\n') {
                     self.src.match_curr("\n\n");
