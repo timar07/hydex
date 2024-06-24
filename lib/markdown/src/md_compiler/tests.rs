@@ -127,14 +127,14 @@ mod tests {
             Compiler::compile(
                 &Parser::from_string("Italicized text is the *cat's meow*.").parse()
             ),
-            "<p>Italicized text is the <i>cat's meow</i>.</p>"
+            "<p>Italicized text is the <i>cat&#39;s meow</i>.</p>"
         );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("Italicized text is the _cat's meow_.").parse()
             ),
-            "<p>Italicized text is the <i>cat's meow</i>.</p>"
+            "<p>Italicized text is the <i>cat&#39;s meow</i>.</p>"
         );
 
         assert_eq!(

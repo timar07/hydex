@@ -25,8 +25,8 @@ fn html_escape_string(s: String) -> String {
             '&' => "&amp;",
             '<' => "&lt;",
             '>' => "&gt;",
-            '"' => "&quot",
-            '\'' => "&#39",
+            '"' => "&quot;",
+            '\'' => "&#39;",
             _ => &raw_char
         };
 
