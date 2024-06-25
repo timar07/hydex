@@ -72,6 +72,26 @@ mod tests {
                 ])
             ])
         );
+
+        assert_eq!(
+            Parser::from_string(
+                "+ list item 1\n\
+                + list item 2\n\
+                \n\
+                + list item 3"
+            ).parse(),
+            Node::UnorderedList(vec![
+                Node::Paragraph(vec![
+                    Node::Normal("list item 1".into())
+                ]),
+                Node::Paragraph(vec![
+                    Node::Normal("list item 2".into())
+                ]),
+                Node::Paragraph(vec![
+                    Node::Normal("list item 3".into())
+                ])
+            ])
+        );
     }
 
     #[test]

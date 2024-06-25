@@ -4,12 +4,12 @@ use crate::md_parse::Parser;
 
 impl BlockParser<'_, '_> {
     /// ```ebnf
-    /// ulist = ( ( "-" | "*" ) WHITESPACE block NEWLINE )*;
+    /// ulist = ( ( "-" | "*" | "+" ) WHITESPACE block NEWLINE )*;
     /// ```
     pub fn parse_unordered_list(&mut self) -> Node {
         let mut nodes = vec![];
 
-        while self.src.match_curr("- ") || self.src.match_curr("* ") {
+        while self.src.match_curr("- ") || self.src.match_curr("* ") || self.src.match_curr("+ ") {
             nodes.push(
                 Parser::from_string(self.src.consume_line()).parse()
             );
