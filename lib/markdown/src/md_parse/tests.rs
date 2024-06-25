@@ -6,6 +6,66 @@ mod tests {
     use crate::md_parse::Parser;
 
     #[test]
+    fn block_olist() {
+        assert_eq!(
+            Parser::from_string("1. Hello, world!").parse(),
+            Node::OrderedList(vec![
+                Node::Paragraph(vec![
+                    Node::Normal("Hello, world!".into())
+                ])
+            ])
+        );
+
+        assert_eq!(
+            Parser::from_string(
+                "1. list item 1\n2. list item 2"
+            ).parse(),
+            Node::OrderedList(vec![
+                Node::Paragraph(vec![
+                    Node::Normal("list item 1".into())
+                ]),
+                Node::Paragraph(vec![
+                    Node::Normal("list item 2".into())
+                ])
+            ])
+        );
+
+        assert_eq!(
+            Parser::from_string(
+                "1. list item 1\n1. list item 2"
+            ).parse(),
+            Node::OrderedList(vec![
+                Node::Paragraph(vec![
+                    Node::Normal("list item 1".into())
+                ]),
+                Node::Paragraph(vec![
+                    Node::Normal("list item 2".into())
+                ])
+            ])
+        );
+
+        assert_eq!(
+            Parser::from_string(
+                "1. list item 1\n\
+                2. list item 2\n\
+                \n\
+                1. list item 3"
+            ).parse(),
+            Node::OrderedList(vec![
+                Node::Paragraph(vec![
+                    Node::Normal("list item 1".into())
+                ]),
+                Node::Paragraph(vec![
+                    Node::Normal("list item 2".into())
+                ]),
+                Node::Paragraph(vec![
+                    Node::Normal("list item 3".into())
+                ])
+            ])
+        );
+    }
+
+    #[test]
     fn block_ulist() {
         assert_eq!(
             Parser::from_string("- Hello, world!").parse(),
