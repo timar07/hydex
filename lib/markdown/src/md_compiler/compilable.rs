@@ -28,6 +28,21 @@ macro_rules! compile_enclosured {
     };
 }
 
+macro_rules! compile_item_collection {
+    ($tag:expr, $item_tag:expr, $children:expr) => {
+        HTMLElement {
+            tag: $tag.into(),
+            content: Some(
+                $children
+                    .iter()
+                    .map(|li| compile_enclosured!($item_tag, li))
+                    .collect()
+            ),
+            attrs: None
+        }.compile()
+    };
+}
+
 impl Compilable for Node {
     fn compile(&self) -> String {
         match self {
@@ -52,16 +67,8 @@ impl Compilable for Node {
                 content: Some(NodeCollection::new(children).compile()),
                 attrs: None
             }.compile(),
-            Node::UnorderedList(children) => HTMLElement {
-                tag: "ul".into(),
-                content: Some(
-                    children
-                        .iter()
-                        .map(|li| compile_enclosured!("li", li))
-                        .collect()
-                ),
-                attrs: None
-            }.compile(),
+            Node::UnorderedList(children) => compile_item_collection!("ul", "li", children),
+            Node::OrderedList(children) => compile_item_collection!("ol", "li", children),
         }
     }
 }

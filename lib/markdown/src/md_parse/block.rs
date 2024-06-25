@@ -19,7 +19,7 @@ impl<'src, 'a> Parsable for BlockParser<'src, 'a> {
         match self.src.current().unwrap() {
             '#' => self.parse_heading(),
             '>' => self.parse_blockquote(),
-            '-' | '*' => {
+            '-' | '*' | '+' => {
                 if self.src.check_next(' ') {
                     self.parse_unordered_list()
                 } else {
@@ -34,6 +34,7 @@ impl<'src, 'a> Parsable for BlockParser<'src, 'a> {
                     SpanParser::new(&mut self.src).parse()
                 }
             },
+            '0'..='9' => self.parse_ordered_list(),
             _ => {
                 self.parse_paragraph()
             }
