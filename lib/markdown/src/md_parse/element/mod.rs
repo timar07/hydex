@@ -2,6 +2,7 @@ mod header;
 mod blockquote;
 mod paragraph;
 mod link;
+mod autolink;
 mod normal_text;
 mod ulist;
 mod olist;

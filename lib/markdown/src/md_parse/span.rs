@@ -31,6 +31,7 @@ impl<'src, 'a> Parsable for SpanParser<'src, 'a> {
                     NormalTextParserEscaped::new(self.src).parse()
                 }
             },
+            '<' => self.parse_autolink(),
             _ => EmphasisParser::new(self.src).parse()
         }
     }
