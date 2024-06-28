@@ -5,6 +5,7 @@ use crate::md_ast::Pos;
 #[derive(Clone)]
 pub struct Cursor<'src> {
     src: &'src str,
+    len: usize,
     pub pos: Pos
 }
 
@@ -12,6 +13,7 @@ impl<'a> Cursor<'a> {
     pub fn from_string(src: &'a str) -> Cursor<'a> {
         Cursor {
             src,
+            len: src.encode_utf16().count(),
             pos: Pos::default()
         }
     }
@@ -22,7 +24,7 @@ impl<'a> Cursor<'a> {
     }
 
     pub fn len(&self) -> usize {
-        self.src.len()
+        self.len
     }
 
     /// Consume everything up to `\n` (not inclusive).
@@ -33,7 +35,7 @@ impl<'a> Cursor<'a> {
             self.consume();
         }
 
-        &self.src[start..self.pos.index]
+        &self.slice(start, self.pos.index)
     }
 
     /// Consume characters until `enclosure` is stumbled.
@@ -72,16 +74,16 @@ impl<'a> Cursor<'a> {
             self.consume();
         }
 
-        &self.src[start..self.pos.index]
+        &self.slice(start, self.pos.index)
     }
 
     /// Lookahead for `matcher`, bounded by line
     pub fn lookahead_inline(&self, matcher: &'static str) -> bool {
         let mut i = self.pos.index;
-        let end = self.src.len() - matcher.len();
+        let end = self.len() - matcher.len();
 
         while i <= end && self.char_at(i).is_some_and(|c| c != '\n') {
-            if &self.src[i..i + matcher.len()] == matcher {
+            if self.slice(i, i + matcher.len()) == matcher {
                 return true;
             }
 
@@ -94,10 +96,10 @@ impl<'a> Cursor<'a> {
     /// Lookahead for `matcher`
     pub fn lookahead(&self, matcher: &'static str) -> bool {
         let mut i = self.pos.index;
-        let end = self.src.len() - matcher.len();
+        let end = self.len() - matcher.len();
 
         while i <= end && self.char_at(i).is_some() {
-            if &self.src[i..i + matcher.len()] == matcher {
+            if self.slice(i, i + matcher.len()) == matcher {
                 return true;
             }
 
@@ -155,27 +157,31 @@ impl<'a> Cursor<'a> {
         let start = self.pos.index;
         let end = start + matcher.len();
 
-        end < self.len() && self.src[start..end].to_owned() == matcher
+        end < self.len() && self[start..end].to_owned() == matcher
     }
 
     pub fn char_at(&self, i: usize) -> Option<char> {
-        self.src.chars().nth(i)
+        self.slice(i, self.len()).chars().next()
     }
 
     pub fn next(&self) -> Option<char> {
-        self.src[self.pos.index+1..].chars().next()
+        self.slice(self.pos.index+1, self.len()).chars().next()
     }
 
     pub fn prev(&self) -> Option<char> {
         if self.pos.index > 0 {
-            return Some(self.src[self.pos.index-1..].chars().next().unwrap());
+            return Some(self.slice(self.pos.index-1, self.len()).chars().next().unwrap());
         }
 
         None
     }
 
     pub fn current(&self) -> Option<char> {
-        self.src[self.pos.index..].chars().next()
+        if self.pos.index == self.len() {
+            return None
+        }
+
+        self[self.pos.index..self.len()].chars().next()
     }
 
     pub fn is_start(&self) -> bool {
@@ -183,7 +189,7 @@ impl<'a> Cursor<'a> {
     }
 
     pub fn is_eof(&self) -> bool {
-        self.pos.index >= self.src.len()
+        self.pos.index >= self.len()
     }
 
 }
@@ -192,15 +198,23 @@ impl<'src> Index<Range<usize>> for Cursor<'src> {
     type Output = str;
 
     fn index(&self, range: Range<usize>) -> &'src Self::Output {
-        if range.start >= self.src.len() || range.end > self.src.len() {
-            panic!("Range out of bounds: {:?} for string length {}", range, self.src.len());
+        if range.start >= self.len() || range.end > self.len() {
+            panic!("Range out of bounds: {:?} for string length {}", range, self.len());
         }
 
         let start = range.start;
         let end = range.end;
 
-        &utf8_slice(&self.src, start, end)
-            .expect("Failed to take a slice of UTF8 string")
+        let slice = &utf8_slice(&self.src, start, end);
+
+        #[cfg(debug_assertions)]
+        if slice.is_none() {
+            eprintln!("Slice taking failed for: \"{}\"", self.src)
+        }
+
+        slice.expect(
+            &format!("Failed to take a slice of UTF8 string [{start}..{end}]")
+        )
     }
 }
 

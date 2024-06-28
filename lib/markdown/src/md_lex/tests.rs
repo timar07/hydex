@@ -4,10 +4,27 @@ mod tests {
 
     #[test]
     fn utf8_slice() {
-        let cursor = Cursor::from_string("aὐv");
+        let mut cursor = Cursor::from_string("aὐv");
+        dbg!(cursor.len());
         assert_eq!(
             &cursor[1..2],
             "ὐ"
+        );
+        assert_eq!(
+            cursor.consume(),
+            Some('a')
+        );
+        assert_eq!(
+            cursor.consume(),
+            Some('ὐ')
+        );
+        assert_eq!(
+            cursor.consume(),
+            Some('v')
+        );
+        assert_eq!(
+            cursor.consume(),
+            None
         );
     }
 }
