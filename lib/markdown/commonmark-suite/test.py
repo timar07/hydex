@@ -1,8 +1,8 @@
+import unittest
 import urllib.request
 import json
 import ctypes
 import os
-import sys
 
 lib_path = os.path.join(os.path.dirname(__file__), "./test.so")
 lib = ctypes.CDLL(lib_path)
@@ -32,15 +32,16 @@ def md_to_html(markdown_text):
     else:
         return None
 
-link = "https://spec.commonmark.org/0.31.2/spec.json"
-f = urllib.request.urlopen(link)
-test_suite = json.loads(f.read())
+class CommonMarkTest(unittest.TestCase):
+    def __init__(self, methodName: str = "runTest") -> None:
+        super().__init__(methodName)
+        self.f = urllib.request.urlopen("https://spec.commonmark.org/0.31.2/spec.json")
+        self.test_suite = json.loads(self.f.read())
 
-for test in test_suite:
-    got = md_to_html(test['markdown'])
-    expected = test['html']
+    def test_commonmark(self):
+        for test in self.test_suite:
+            with self.subTest(i=test['example']):
+                self.assertEqual(test['html'], md_to_html(test['markdown']))
 
-    if got != expected:
-        print(f"Fail: expected\n{expected}\ngot:\n{got}\n\n")
-
-# print(md_to_html("# Hello from C!\nThis is *Markdown*."))
+if __name__ == '__main__':
+    unittest.main()
