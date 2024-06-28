@@ -36,7 +36,6 @@ impl<'src, 'a> EmphasisParser<'src, 'a> {
             &enclosure,
             &enclosure,
             |content| {
-                dbg!(content);
                 NormalTextParserEscaped::new(
                     &mut Cursor::from_string(content)
                 ).parse()

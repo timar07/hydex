@@ -21,7 +21,7 @@ impl BlockParser<'_, '_> {
 
         Node::Paragraph(vec![
             InlineParser::new(
-                &mut Cursor::from_string(dbg!(&paragraph_content.join(" ")))
+                &mut Cursor::from_string(&paragraph_content.join(" "))
             ).parse()
         ])
     }
