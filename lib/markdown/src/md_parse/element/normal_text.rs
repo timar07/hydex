@@ -20,6 +20,10 @@ impl<'src, 'a> Parsable for NormalTextParserEscaped<'src, 'a> {
             self.src.consume();
         }
 
+        if start == self.src.pos.index {
+            return Node::Normal("".to_string());
+        }
+
         Node::Normal(self.src[start..self.src.pos.index].to_owned())
     }
 }
@@ -43,8 +47,8 @@ impl<'src, 'a> NormalTextParserUnescaped<'src, 'a> {
         match ch {
             '`' | '*' | '_' | '{' |
             '}' | '[' | ']' | '<' |
-            '>' | '(' | ')' | '+' |
-            '|' | '\\' => false,
+            '>' | '(' | ')' | '|' |
+            '~' | '\\' => false,
             _ => true
         }
     }
