@@ -1,2 +1,3 @@
 build:
-	gcc ./test.c -o ./test.so -lmarkdown -L../target/debug
+	cargo build --release
+	gcc -shared ./test.c -o ./test.so -lmarkdown -L../target/debug
