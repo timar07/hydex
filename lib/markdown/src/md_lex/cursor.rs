@@ -17,7 +17,8 @@ impl<'a> Cursor<'a> {
     }
 
     pub fn slice(&self, start: usize, end: usize) -> &'a str {
-        &self.src[start..end]
+        &utf8_slice(self.src, start, end)
+            .expect("Failed to take a slice of UTF8 string")
     }
 
     pub fn len(&self) -> usize {
@@ -191,7 +192,6 @@ impl<'src> Index<Range<usize>> for Cursor<'src> {
     type Output = str;
 
     fn index(&self, range: Range<usize>) -> &'src Self::Output {
-        // Check if the range is within bounds
         if range.start >= self.src.len() || range.end > self.src.len() {
             panic!("Range out of bounds: {:?} for string length {}", range, self.src.len());
         }
@@ -199,7 +199,20 @@ impl<'src> Index<Range<usize>> for Cursor<'src> {
         let start = range.start;
         let end = range.end;
 
-        // Extract the slice from the source string
-        &self.src[start..end]
+        &utf8_slice(&self.src, start, end)
+            .expect("Failed to take a slice of UTF8 string")
     }
+}
+
+/// Takes UTF8 slice from `s` string.
+/// Credits: yolenoyer (https://stackoverflow.com/a/61711340/14156451)
+fn utf8_slice(s: &str, start: usize, end: usize) -> Option<&str> {
+    let mut iter = s.char_indices()
+        .map(|(pos, _)| pos)
+        .chain(Some(s.len()))
+        .skip(start)
+        .peekable();
+    let start_pos = *iter.peek()?;
+    for _ in start..end { iter.next(); }
+    Some(&s[start_pos..*iter.peek()?])
 }
