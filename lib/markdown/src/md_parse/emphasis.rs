@@ -87,7 +87,7 @@ impl<'src, 'a> Parsable for EmphasisParser<'src, 'a> {
                 if self.src.check_next('~') {
                     self.parse_nested_emphasis("~~", Node::Strikethrough)
                 } else {
-                    NormalTextParserUnescaped::new(self.src).parse()
+                    NormalTextParserEscaped::new(self.src).parse()
                 }
             }
             '`' => {
