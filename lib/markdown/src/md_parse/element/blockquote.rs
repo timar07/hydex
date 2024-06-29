@@ -12,7 +12,10 @@ impl BlockParser<'_, '_> {
         while self.src.match_curr(">") {
             self.src.match_curr(" ");
             content.push_str(&self.src.consume_until("\n"));
-            self.src.match_curr("\n");
+
+            if self.src.match_curr("\n") {
+                content.push_str("\n");
+            }
         }
 
         Node::Blockquote(
