@@ -66,6 +66,15 @@ impl<'a> Cursor<'a> {
         }
     }
 
+    /// Consume while current sequence matches `seq`
+    pub fn consume_while(&mut self, seq: &'static str) -> &'a str {
+        let start = self.pos.index;
+
+        while !self.is_eof() && self.match_curr(seq) {}
+
+        &self.slice(start, self.pos.index)
+    }
+
     /// Consume until `seq` is stumbled.
     pub fn consume_until(&mut self, seq: &'static str) -> &'a str {
         let start = self.pos.index;
@@ -157,7 +166,7 @@ impl<'a> Cursor<'a> {
         let start = self.pos.index;
         let end = start + matcher.len();
 
-        end < self.len() && self[start..end].to_owned() == matcher
+        end <= self.len() && self[start..end].to_owned() == matcher
     }
 
     pub fn char_at(&self, i: usize) -> Option<char> {
