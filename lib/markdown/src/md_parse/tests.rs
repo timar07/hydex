@@ -6,6 +6,16 @@ mod tests {
     use crate::md_parse::Parser;
 
     #[test]
+    fn block_code() {
+        assert_eq!(
+            Parser::from_string(
+                "~~~\ndef hello():\n    print(\"Hello\")\n~~~~~~~"
+            ).parse(),
+            Node::CodeBlock("def hello():\n    print(\"Hello\")".into())
+        );
+    }
+
+    #[test]
     fn block_olist() {
         assert_eq!(
             Parser::from_string("1. Hello, world!").parse(),

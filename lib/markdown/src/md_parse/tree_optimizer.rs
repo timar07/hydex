@@ -37,7 +37,7 @@ impl TreeOptimizer {
             Node::Strikethrough(child) => Self::visit_child_node(child, Node::Strikethrough),
             Node::Heading(n, child) => Self::visit_child_node(child, |c| Node::Heading(n, c)),
             Node::Blockquote(child) => Self::visit_child_node(child, Node::Blockquote),
-            Node::Code(_) | Node::Link { .. } | Node::Normal(_) => node,
+            Node::Code(_) | Node::CodeBlock(_) | Node::Link { .. } | Node::Normal(_) => node,
         }
     }
 

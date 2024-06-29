@@ -69,6 +69,15 @@ impl Compilable for Node {
             }.compile(),
             Node::UnorderedList(children) => compile_item_collection!("ul", "li", children),
             Node::OrderedList(children) => compile_item_collection!("ol", "li", children),
+            Node::CodeBlock(child) => HTMLElement {
+                tag: "pre".to_string(),
+                attrs: None,
+                content: Some(HTMLElement {
+                    tag: "code".to_string(),
+                    attrs: None,
+                    content: Some(child.to_owned())
+                }.compile())
+            }.compile()
         }
     }
 }

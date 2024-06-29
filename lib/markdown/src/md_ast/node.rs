@@ -16,6 +16,7 @@ pub enum Node {
     Highlight(Box<Node>),
     Strikethrough(Box<Node>),
     Code(Box<Node>),
+    CodeBlock(String),
     Normal(String),
 }
 

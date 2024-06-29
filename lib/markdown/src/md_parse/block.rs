@@ -34,6 +34,13 @@ impl<'src, 'a> Parsable for BlockParser<'src, 'a> {
                     SpanParser::new(&mut self.src).parse()
                 }
             },
+            '~' => {
+                if self.src.check_curr("~~~") && self.src.lookahead("~~~") {
+                    self.parse_fenced_codeblock()
+                } else {
+                    self.parse_paragraph()
+                }
+            }
             '0'..='9' => self.parse_ordered_list(),
             _ => {
                 self.parse_paragraph()
