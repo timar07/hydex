@@ -79,7 +79,7 @@ impl<'a> Cursor<'a> {
     pub fn consume_until(&mut self, seq: &'static str) -> &'a str {
         let start = self.pos.index;
 
-        while !self.is_eof() && !self.match_curr(seq) {
+        while !self.is_eof() && !self.check_curr(seq) {
             self.consume();
         }
 
