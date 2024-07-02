@@ -13,7 +13,7 @@ public-facing functionality.
 
 - - [x] Heading
 - - [x] Blockquote
-- - [ ] Ordered list
+- - [x] Ordered list
 - - [x] Unordered list
 - - [ ] Horizontal Rule
 
