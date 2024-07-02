@@ -197,4 +197,12 @@ mod tests {
             "<p><s>The world is flat.</s></p>"
         );
     }
+
+    #[test]
+    fn normal_escapes() {
+        assert_eq!(
+            Compiler::compile(&Parser::from_string(r"\*not emphasized*").parse()),
+            "<p>*not emphasized*</p>"
+        );
+    }
 }

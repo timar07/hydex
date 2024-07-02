@@ -48,20 +48,26 @@ impl<'src, 'a> EmphasisParser<'src, 'a> {
         enclosure: &'static str,
         result_constructor: F
     ) -> Node {
-        result_constructor(
-            Box::new(
-                Enclosured::new(
-                    self.src,
-                    enclosure,
-                    enclosure,
-                    |content| {
-                        InlineParser::new(
-                            &mut Cursor::from_string(content)
-                        ).parse()
-                    }
+        let mut parser = Enclosured::new(
+            self.src,
+            enclosure,
+            enclosure,
+            |content| {
+                InlineParser::new(
+                    &mut Cursor::from_string(content)
                 ).parse()
+            }
+        );
+
+        if parser.is_enclosured() {
+            result_constructor(
+                Box::new(
+                    parser.parse()
+                )
             )
-        )
+        } else {
+            NormalTextParserEscaped::new(self.src).parse()
+        }
     }
 }
 
@@ -92,10 +98,6 @@ impl<'src, 'a> Parsable for EmphasisParser<'src, 'a> {
             }
             '`' => {
                 Node::Code(Box::new(self.parse_code()))
-            },
-            '\\' => {
-                self.src.consume();
-                NormalTextParserEscaped::new(self.src).parse()
             },
             _ => NormalTextParserUnescaped::new(self.src).parse()
         }

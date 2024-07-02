@@ -162,7 +162,7 @@ impl<'a> Cursor<'a> {
     }
 
     /// Check if the next sequence matches `matcher`
-    pub fn check_curr(&mut self, matcher: &'static str) -> bool {
+    pub fn check_curr(&self, matcher: &'static str) -> bool {
         let start = self.pos.index;
         let end = start + matcher.len();
 
