@@ -204,5 +204,30 @@ mod tests {
             Compiler::compile(&Parser::from_string(r"\*not emphasized*").parse()),
             "<p>*not emphasized*</p>"
         );
+
+        assert_eq!(
+            Compiler::compile(&Parser::from_string(r"\`not code`").parse()),
+            r"\`not code`"
+        );
+
+        assert_eq!(
+            Compiler::compile(&Parser::from_string(r"1\. not a list").parse()),
+            r"<p>1. not a list</p>"
+        );
+
+        assert_eq!(
+            Compiler::compile(&Parser::from_string(r"\* not a list").parse()),
+            r"<p>* not a list</p>"
+        );
+
+        assert_eq!(
+            Compiler::compile(&Parser::from_string(r"\# not a heading").parse()),
+            r"<p>\# not a heading</p>"
+        );
+
+        assert_eq!(
+            Compiler::compile(&Parser::from_string(r"\\*emphasis*").parse()),
+            r"<p>\<em>emphasis</em></p>"
+        );
     }
 }
