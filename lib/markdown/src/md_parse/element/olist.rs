@@ -7,8 +7,9 @@ impl BlockParser<'_, '_> {
     /// olist = ( NUMBER "." WHITESPACE block NEWLINE )*;
     /// ```
     pub fn parse_ordered_list(&mut self) -> Node {
+
         if !self.match_ol_start() {
-            return self.parse_paragraph();
+            return self.parse_paragraph()
         }
 
         let mut nodes = vec![];
@@ -33,12 +34,15 @@ impl BlockParser<'_, '_> {
     }
 
     fn match_ol_start(&mut self) -> bool {
+        let pos = self.src.pos;
         let is_ol_start = self.match_number() && self.src.match_curr(".");
 
         if is_ol_start {
             self.src.match_curr(" ");
             return true;
         }
+
+        self.src.pos = pos;
 
         false
     }
