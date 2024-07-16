@@ -206,8 +206,8 @@ mod tests {
         );
 
         assert_eq!(
-            Compiler::compile(&Parser::from_string(r"\`not code`").parse()),
-            r"\`not code`"
+            Compiler::compile(&Parser::from_string(r"\`not a code`").parse()),
+            r"<p>`not a code`</p>"
         );
 
         assert_eq!(
