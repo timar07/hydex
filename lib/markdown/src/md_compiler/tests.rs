@@ -222,7 +222,7 @@ mod tests {
 
         assert_eq!(
             Compiler::compile(&Parser::from_string(r"\# not a heading").parse()),
-            r"<p>\# not a heading</p>"
+            r"<p># not a heading</p>"
         );
 
         assert_eq!(
