@@ -49,7 +49,7 @@ impl Compilable for Node {
             Node::TextRun(children) => NodeCollection::new(children).compile(),
             Node::Bold(child) => compile_enclosured!("b", child),
             Node::Highlight(child) => compile_enclosured!("mark", child),
-            Node::Italic(child) => compile_enclosured!("i", child),
+            Node::Italic(child) => compile_enclosured!("em", child),
             Node::Code(child) => compile_enclosured!("code", child),
             Node::Strikethrough(child) => compile_enclosured!("s", child),
             Node::Link { label, url } => HTMLElement {

@@ -31,7 +31,7 @@ mod tests {
             Compiler::compile(
                 &Parser::from_string("# Heading with *emphasis*").parse()
             ),
-            "<h1>Heading with <i>emphasis</i></h1>"
+            "<h1>Heading with <em>emphasis</em></h1>"
         );
 
         assert_eq!(
@@ -65,35 +65,35 @@ mod tests {
             Compiler::compile(
                 &Parser::from_string("This text is ***really important***.").parse()
             ),
-            "<p>This text is <b><i>really important</i></b>.</p>"
+            "<p>This text is <b><em>really important</em></b>.</p>"
         );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("This text is ___really important___.").parse()
             ),
-            "<p>This text is <b><i>really important</i></b>.</p>"
+            "<p>This text is <b><em>really important</em></b>.</p>"
         );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("This text is __*really important*__.").parse()
             ),
-            "<p>This text is <b><i>really important</i></b>.</p>"
+            "<p>This text is <b><em>really important</em></b>.</p>"
         );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("This text is **_really important_**.").parse()
             ),
-            "<p>This text is <b><i>really important</i></b>.</p>"
+            "<p>This text is <b><em>really important</em></b>.</p>"
         );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("This is really***very***important text.").parse()
             ),
-            "<p>This is really<b><i>very</i></b>important text.</p>"
+            "<p>This is really<b><em>very</em></b>important text.</p>"
         );
     }
 
@@ -127,28 +127,28 @@ mod tests {
             Compiler::compile(
                 &Parser::from_string("Italicized text is the *cat's meow*.").parse()
             ),
-            "<p>Italicized text is the <i>cat&#39;s meow</i>.</p>"
+            "<p>Italicized text is the <em>cat&#39;s meow</em>.</p>"
         );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("Italicized text is the _cat's meow_.").parse()
             ),
-            "<p>Italicized text is the <i>cat&#39;s meow</i>.</p>"
+            "<p>Italicized text is the <em>cat&#39;s meow</em>.</p>"
         );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("A*cat*meow").parse()
             ),
-            "<p>A<i>cat</i>meow</p>"
+            "<p>A<em>cat</em>meow</p>"
         );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("*italic*").parse()
             ),
-            "<p><i>italic</i></p>"
+            "<p><em>italic</em></p>"
         );
     }
 
