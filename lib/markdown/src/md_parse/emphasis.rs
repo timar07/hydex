@@ -31,16 +31,15 @@ impl<'src, 'a> EmphasisParser<'src, 'a> {
     fn parse_code(&mut self) -> Node {
         let enclosure = if self.src.check_next('`') { "``" } else { "`" };
 
-        Enclosured::new(
-            self.src,
-            &enclosure,
-            &enclosure,
+        self.parse_emphasis(
+            enclosure,
             |content| {
                 NormalTextParserEscaped::new(
                     &mut Cursor::from_string(content)
                 ).parse()
-            }
-        ).parse()
+            },
+            Node::Code
+        )
     }
 
     fn parse_nested_emphasis<F: FnOnce(Box<Node>) -> Node>(
@@ -48,15 +47,28 @@ impl<'src, 'a> EmphasisParser<'src, 'a> {
         enclosure: &'static str,
         result_constructor: F
     ) -> Node {
-        let mut parser = Enclosured::new(
-            self.src,
-            enclosure,
+        self.parse_emphasis(
             enclosure,
             |content| {
                 InlineParser::new(
                     &mut Cursor::from_string(content)
                 ).parse()
-            }
+            },
+            result_constructor
+        )
+    }
+
+    fn parse_emphasis<F: FnOnce(Box<Node>) -> Node>(
+        &mut self,
+        enclosure: &'static str,
+        content_parser: fn(&str) -> Node,
+        result_constructor: F
+    ) -> Node {
+        let mut parser = Enclosured::new(
+            self.src,
+            enclosure,
+            enclosure,
+            content_parser
         );
 
         if parser.is_enclosured() {
@@ -97,7 +109,7 @@ impl<'src, 'a> Parsable for EmphasisParser<'src, 'a> {
                 }
             }
             '`' => {
-                Node::Code(Box::new(self.parse_code()))
+                self.parse_code()
             },
             _ => NormalTextParserUnescaped::new(self.src).parse()
         }
