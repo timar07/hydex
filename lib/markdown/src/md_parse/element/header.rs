@@ -24,7 +24,7 @@ impl BlockParser<'_, '_> {
             Box::new(
                 InlineParser::new(
                     &mut Cursor::from_string(
-                        self.src.consume_line()
+                        self.src.consume_line().trim_end()
                     )
                 ).parse()
             )

@@ -27,11 +27,11 @@ impl<'a> Cursor<'a> {
         self.len
     }
 
-    /// Consume everything up to `\n` (not inclusive).
+    /// Consume everything up to `\n`.
     pub fn consume_line(&mut self) -> &'a str {
         let start = self.pos.index;
 
-        while !self.is_eof() && !self.check_curr("\n") {
+        while !self.is_eof() && !self.match_curr("\n") {
             self.consume();
         }
 

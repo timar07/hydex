@@ -16,10 +16,8 @@ impl BlockParser<'_, '_> {
 
         loop {
             nodes.push(
-                Parser::from_string(self.src.consume_line()).parse()
+                Parser::from_string(self.src.consume_line().trim_end()).parse()
             );
-
-            self.src.consume(); // \n
 
             while self.src.current().is_some_and(|c| c.is_whitespace() || c == '\n') {
                 self.src.consume();

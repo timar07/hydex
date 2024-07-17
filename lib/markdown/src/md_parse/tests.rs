@@ -187,7 +187,7 @@ mod tests {
             Node::Blockquote(
                 Box::new(Node::TextRun(vec![
                     Node::Paragraph(vec![
-                        Node::Normal("Hello, world! This is multiline quote".into())
+                        Node::Normal("Hello, world!\nThis is multiline quote".into())
                     ]),
                     Node::Paragraph(vec![
                         Node::Normal("With paragraphs".into())
@@ -215,7 +215,7 @@ mod tests {
                 "This is just a single\nparagraph"
             ).parse(),
             Node::Paragraph(vec![
-                Node::Normal("This is just a single paragraph".into())
+                Node::Normal("This is just a single\nparagraph".into())
             ])
         )
     }

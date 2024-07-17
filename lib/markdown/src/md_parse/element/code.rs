@@ -8,7 +8,6 @@ impl BlockParser<'_, '_> {
     /// ```
     pub fn parse_fenced_codeblock(&mut self) -> Node {
         self.src.consume_line(); // TODO: parse lang here
-        self.src.consume(); // \n
         let code = self.src.consume_until("\n~~~");
         self.src.consume(); // \n
         self.src.consume_while("~");
