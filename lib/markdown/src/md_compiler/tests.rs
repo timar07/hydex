@@ -5,6 +5,73 @@ mod tests {
     use crate::md_parse::Parser;
 
     #[test]
+    fn block_paragraph() {
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("aaa\n\nbbb")
+                    .parse()
+            ),
+            "<p>aaa</p>\n<p>bbb</p>"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("aaa\nbbb\n\nccc\nddd")
+                    .parse()
+            ),
+            "<p>aaa\nbbb</p>\n<p>ccc\nddd</p>"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("aaa\n\n\nbbb")
+                    .parse()
+            ),
+            "<p>aaa</p>\n<p>bbb</p>"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("  aaa\n bbb")
+                    .parse()
+            ),
+            "<p>aaa\nbbb</p>"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string(
+                    "aaa\n\
+                                 bbb\n\
+                                                           ccc"
+                )
+                    .parse()
+            ),
+            "<p>aaa\nbbb\nccc</p>"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string(
+                    "   aaa\nbbb"
+                )
+                    .parse()
+            ),
+            "<p>aaa\nbbb</p>"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string(
+                    "aaa    \nbbb     "
+                )
+                    .parse()
+            ),
+            "<p>aaa<br />\nbbb</p>"
+        );
+    }
+
+    #[test]
     fn block_heading() {
         assert_eq!(
             Parser::from_string("# Heading").parse(),
