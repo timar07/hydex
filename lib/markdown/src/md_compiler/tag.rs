@@ -24,7 +24,10 @@ pub struct HTMLElement<'a> {
     pub attrs: Option<&'a Vec<HTMLAttribute>>,
 
     /// Element content
-    pub content: Option<String>
+    pub content: Option<String>,
+
+    /// HTML Element Level
+    pub level: HTMLElementLevel
 }
 
 impl<'a> Compilable for HTMLElement<'a> {
@@ -34,7 +37,7 @@ impl<'a> Compilable for HTMLElement<'a> {
             _ => "".to_string()
         };
 
-        if let Some(content) = &self.content {
+        let element = if let Some(content) = &self.content {
             format!(
                 "<{}{attrs_str}>{content}</{}>",
                 self.tag,
@@ -45,7 +48,16 @@ impl<'a> Compilable for HTMLElement<'a> {
                 "<{}{attrs_str} />",
                 self.tag
             )
-        }
+        };
+
+        format!(
+            "{element}{}",
+            if self.level == HTMLElementLevel::Block {
+                "\n"
+            } else {
+                ""
+            }
+        )
     }
 }
 
@@ -92,4 +104,10 @@ impl Compilable for HTMLAttribute {
             Self::Value(name, value) => format!("{name}=\"{value}\"")
         }
     }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum HTMLElementLevel {
+    Block,
+    Inline
 }
