@@ -78,7 +78,8 @@ impl<'src, 'a> EmphasisParser<'src, 'a> {
                 )
             )
         } else {
-            NormalTextParserEscaped::new(self.src).parse()
+            self.src.match_curr(enclosure);
+            Node::Normal(enclosure.to_string())
         }
     }
 }
