@@ -266,6 +266,114 @@ mod tests {
     }
 
     #[test]
+    fn linebreaks() {
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("foo  \nbaz").parse()
+            ),
+            "<p>foo<br />\nbaz</p>\n"
+        );
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("foo\\\nbaz").parse()
+            ),
+            "<p>foo<br />\nbaz</p>\n"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("foo       \nbaz").parse()
+            ),
+            "<p>foo<br />\nbaz</p>\n"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("foo\\\n     bar").parse()
+            ),
+            "<p>foo<br />\nbar</p>\n"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("foo  \n     bar").parse()
+            ),
+            "<p>foo<br />\nbar</p>\n"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("*foo  \nbar*").parse()
+            ),
+            "<p><em>foo<br />\nbar</em></p>\n"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("*foo\\\nbar*").parse()
+            ),
+            "<p><em>foo<br />\nbar</em></p>\n"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("foo\\").parse()
+            ),
+            "<p>foo\\</p>\n"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("foo  ").parse()
+            ),
+            "<p>foo</p>\n"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("### foo\\").parse()
+            ),
+            "<h3>foo\\</h3>\n"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("### foo  \n").parse()
+            ),
+            "<h3>foo</h3>\n"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("### foo  \ntest").parse()
+            ),
+            "<h3>foo</h3>\n<p>test</p>\n"
+        );
+
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("# foo ~bar  \n~\nasdfasdf").parse()
+            ),
+            "<h1>foo ~bar</h1>\n<p>~\nasdfasdf</p>\n"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("`code  \nspan`").parse()
+            ),
+            "<p><code>code   span</code></p>\n"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("`code\\\nspan`").parse()
+            ),
+            "<p><code>code\\ span</code></p>\n"
+        );
+    }
+
+    #[test]
     fn normal_escapes() {
         assert_eq!(
             Compiler::compile(&Parser::from_string(r"\*not emphasized*").parse()),

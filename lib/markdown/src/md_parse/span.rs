@@ -32,7 +32,9 @@ impl<'src, 'a> Parsable for SpanParser<'src, 'a> {
                 }
             },
             '<' => self.parse_autolink(),
-            _ => EmphasisParser::new(self.src).parse()
+            _ => {
+                EmphasisParser::new(self.src).parse()
+            }
         }
     }
 }
