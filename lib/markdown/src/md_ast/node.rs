@@ -18,6 +18,7 @@ pub enum Node {
     Code(Box<Node>),
     CodeBlock(String),
     Normal(String),
+    Linebreak
 }
 
 impl Into<String> for Node {

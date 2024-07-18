@@ -1,6 +1,7 @@
 use crate::md_ast::Node;
 use crate::md_lex::Cursor;
 
+use super::emphasis::EmphasisParser;
 use super::parser::Parsable;
 use super::span::SpanParser;
 
@@ -23,9 +24,18 @@ impl<'src, 'a> Parsable for InlineParser<'src, 'a> {
         let mut nodes = vec![];
 
         while !self.src.is_eof() {
-            nodes.push(
-                SpanParser::new(&mut self.src).parse()
-            );
+            let node = match self.src.current().unwrap() {
+                ' ' => {
+                    if self.src.match_curr("  \n") {
+                        Node::Linebreak
+                    } else {
+                        EmphasisParser::new(self.src).parse()
+                    }
+                },
+                _ => SpanParser::new(&mut self.src).parse()
+            };
+
+            nodes.push(node);
         }
 
         Node::TextRun(nodes)

@@ -11,6 +11,10 @@ impl<'src, 'a> NormalTextParserUnescaped<'src, 'a> {
         Self { src }
     }
 
+    fn is_linebreak(&self) -> bool {
+        self.src.check_curr("  \n")
+    }
+
     fn is_normal_char(ch: char) -> bool {
         match ch {
             '`' | '*' | '_' | '{' |
@@ -38,6 +42,11 @@ impl<'src, 'a> Parsable for NormalTextParserUnescaped<'src, 'a> {
         let mut s = String::from("");
 
         while !self.src.is_eof() && Self::is_normal_char(self.src.current().unwrap()) {
+            if self.is_linebreak() {
+                s = s.trim_end().into();
+                break;
+            }
+
             if self.is_backslash_escape() {
                 self.src.consume(); // \
             }
@@ -63,6 +72,7 @@ impl<'a, 'b> Parsable for NormalTextParserEscaped<'a, 'b> {
     fn parse(&mut self) -> Node {
         let mut s = String::from("");
 
+        // TODO: Optimization
         while !self.src.is_eof() {
             s.push(self.src.consume().unwrap());
         }

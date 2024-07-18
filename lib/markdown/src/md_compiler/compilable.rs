@@ -84,7 +84,16 @@ impl Compilable for Node {
                     level: Inline
                 }.compile()),
                 level: Block
-            }.compile()
+            }.compile(),
+            Node::Linebreak => format!(
+                "{}\n",
+                HTMLElement {
+                    tag: "br".to_string(),
+                    attrs: None,
+                    content: None,
+                    level: Inline
+                }.compile()
+            )
         }
     }
 }

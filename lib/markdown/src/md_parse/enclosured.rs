@@ -26,15 +26,13 @@ impl<'src, 'a> Enclosured<'src, 'a> {
     }
 
     pub fn is_enclosured(&self) -> bool {
-        let mut i = self.src.pos.index + self.lhs.len();
+        let start = self.src.pos.index + self.lhs.len();
         let end = self.src.len() - self.rhs.len();
 
-        while i <= end && self.src.char_at(i).is_some_and(|c| c != '\n') {
+        for i in start..=end {
             if self.src.slice(i, i + self.rhs.len()) == self.rhs {
                 return true;
             }
-
-            i += 1
         }
 
         false
