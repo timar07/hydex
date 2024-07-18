@@ -317,6 +317,49 @@ mod tests {
 
         assert_eq!(
             Compiler::compile(
+                &Parser::from_string("foo\\").parse()
+            ),
+            "<p>foo\\</p>\n"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("foo  ").parse()
+            ),
+            "<p>foo</p>\n"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("### foo\\").parse()
+            ),
+            "<h3>foo\\</h3>\n"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("### foo  \n").parse()
+            ),
+            "<h3>foo</h3>\n"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("### foo  \ntest").parse()
+            ),
+            "<h3>foo</h3>\n<p>test</p>\n"
+        );
+
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("# foo ~bar  \n~\nasdfasdf").parse()
+            ),
+            "<h1>foo ~bar</h1>\n<p>~\nasdfasdf</p>\n"
+        );
+
+        assert_eq!(
+            Compiler::compile(
                 &Parser::from_string("`code  \nspan`").parse()
             ),
             "<p><code>code   span</code></p>\n"
