@@ -32,6 +32,13 @@ impl<'src, 'a> Parsable for InlineParser<'src, 'a> {
                         EmphasisParser::new(self.src).parse()
                     }
                 },
+                '\\' => {
+                    if self.src.match_curr("\\\n") {
+                        Node::Linebreak
+                    } else {
+                        EmphasisParser::new(self.src).parse()
+                    }
+                }
                 _ => SpanParser::new(&mut self.src).parse()
             };
 

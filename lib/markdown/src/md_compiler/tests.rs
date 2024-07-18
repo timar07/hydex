@@ -273,12 +273,25 @@ mod tests {
             ),
             "<p>foo<br />\nbaz</p>\n"
         );
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("foo\\\nbaz").parse()
+            ),
+            "<p>foo<br />\nbaz</p>\n"
+        );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("foo       \nbaz").parse()
             ),
             "<p>foo<br />\nbaz</p>\n"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("foo\\\n     bar").parse()
+            ),
+            "<p>foo<br />\nbar</p>\n"
         );
 
         assert_eq!(
@@ -297,9 +310,23 @@ mod tests {
 
         assert_eq!(
             Compiler::compile(
+                &Parser::from_string("*foo\\\nbar*").parse()
+            ),
+            "<p><em>foo<br />\nbar</em></p>\n"
+        );
+
+        assert_eq!(
+            Compiler::compile(
                 &Parser::from_string("`code  \nspan`").parse()
             ),
             "<p><code>code   span</code></p>\n"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("`code\\\nspan`").parse()
+            ),
+            "<p><code>code\\ span</code></p>\n"
         );
     }
 

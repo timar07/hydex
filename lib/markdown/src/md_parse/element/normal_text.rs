@@ -12,7 +12,7 @@ impl<'src, 'a> NormalTextParserUnescaped<'src, 'a> {
     }
 
     fn is_linebreak(&self) -> bool {
-        self.src.check_curr("  \n")
+        self.src.check_curr("\\\n") || self.src.check_curr("  \n")
     }
 
     fn is_normal_char(ch: char) -> bool {
