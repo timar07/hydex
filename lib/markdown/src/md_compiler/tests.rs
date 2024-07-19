@@ -246,15 +246,36 @@ mod tests {
             Compiler::compile(
                 &Parser::from_string("A single backtick in a code span: `` ` ``").parse()
             ),
-            "<p>A single backtick in a code span: <code> ` </code></p>\n"
+            "<p>A single backtick in a code span: <code>`</code></p>\n"
         );
 
         assert_eq!(
             Compiler::compile(
                 &Parser::from_string("A backtick-delimited string in a code span: `` `foo` ``").parse()
             ),
-            "<p>A backtick-delimited string in a code span: <code> `foo` </code></p>\n"
+            "<p>A backtick-delimited string in a code span: <code>`foo`</code></p>\n"
         );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("`foo`").parse()
+            ),
+            "<p><code>foo</code></p>\n"
+        );
+
+        assert_eq!(
+            Compiler::compile(
+                &Parser::from_string("`` foo ` bar ``").parse()
+            ),
+            "<p><code>foo ` bar</code></p>\n"
+        );
+
+        // assert_eq!(
+        //     Compiler::compile(
+        //         &Parser::from_string("` `` `").parse()
+        //     ),
+        //     "<p><code>``</code></p>\n"
+        // );
     }
 
     #[test]

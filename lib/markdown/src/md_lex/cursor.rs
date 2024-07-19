@@ -51,6 +51,7 @@ impl<'a> Cursor<'a> {
     pub fn consume_enclosured(&mut self, enclosure: &'static str) {
         while !self.is_eof() {
             if self.match_curr(&enclosure[..1]) {
+                // stumbled enclosure again
                 if self.check_curr(enclosure) {
                     continue;
                 }
@@ -58,11 +59,9 @@ impl<'a> Cursor<'a> {
                 if enclosure.len() == 1 || self.match_curr(&enclosure[1..]) {
                     break;
                 }
-
-                continue;
+            } else {
+                self.consume();
             }
-
-            self.consume();
         }
     }
 

@@ -468,7 +468,7 @@ mod tests {
             Node::Paragraph(vec![
                 Node::Normal("A single backtick in a code span: ".into()),
                 Node::Code(Box::new(
-                    Node::Normal(" ` ".into())
+                    Node::Normal("`".into())
                 ))
             ])
         );
@@ -478,7 +478,7 @@ mod tests {
             Node::Paragraph(vec![
                 Node::Normal("A backtick-delimited string in a code span: ".into()),
                 Node::Code(Box::new(
-                    Node::Normal(" `foo` ".into())
+                    Node::Normal("`foo`".into())
                 ))
             ])
         );

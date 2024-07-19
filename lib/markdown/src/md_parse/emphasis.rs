@@ -34,9 +34,18 @@ impl<'src, 'a> EmphasisParser<'src, 'a> {
         self.parse_emphasis(
             enclosure,
             |content| {
-                NormalTextParserEscaped::new(
-                    &mut Cursor::from_string(content)
-                ).parse()
+                Node::Normal(
+                    content
+                        .trim_start_matches(' ')
+                        .trim_end_matches(' ')
+                        .clone()
+                        .chars()
+                        .map(|c| match c {
+                            '\n' => ' ',
+                            _ => c
+                        })
+                        .collect::<String>()
+                )
             },
             Node::Code
         )
@@ -72,11 +81,7 @@ impl<'src, 'a> EmphasisParser<'src, 'a> {
         );
 
         if parser.is_enclosured() {
-            result_constructor(
-                Box::new(
-                    parser.parse()
-                )
-            )
+            result_constructor(Box::new(parser.parse()))
         } else {
             self.src.match_curr(enclosure);
             Node::Normal(enclosure.to_string())
