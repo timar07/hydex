@@ -1,7 +1,7 @@
 use crate::md_ast::Node;
 use crate::md_lex::Cursor;
 
-use super::enclosured::Enclosured;
+use super::fenced::Fenced;
 use super::inline::InlineParser;
 use super::parser::Parsable;
 use super::element::{
@@ -73,7 +73,7 @@ impl<'src, 'a> EmphasisParser<'src, 'a> {
         content_parser: fn(&str) -> Node,
         result_constructor: F
     ) -> Node {
-        let mut parser = Enclosured::new(
+        let mut parser = Fenced::new(
             self.src,
             enclosure,
             enclosure,

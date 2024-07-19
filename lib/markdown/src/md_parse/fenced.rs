@@ -3,19 +3,19 @@ use crate::md_lex::Cursor;
 
 use super::parser::Parsable;
 
-/// Parses enclosured syntax.
+/// Parses fenced syntax.
 ///
 /// ```bnf
-/// enclosured = lhs content rhs;
+/// fenced = lhs content rhs;
 /// ```
-pub struct Enclosured<'src, 'a> {
+pub struct Fenced<'src, 'a> {
     src: &'a mut Cursor<'src>,
     lhs: &'static str,
     rhs: &'static str,
     content_parser: fn(&'src str) -> Node,
 }
 
-impl<'src, 'a> Enclosured<'src, 'a> {
+impl<'src, 'a> Fenced<'src, 'a> {
     pub fn new(
         src: &'a mut Cursor<'src>,
         lhs: &'static str,
@@ -39,7 +39,7 @@ impl<'src, 'a> Enclosured<'src, 'a> {
     }
 }
 
-impl<'src, 'a> Parsable for Enclosured<'src, 'a> {
+impl<'src, 'a> Parsable for Fenced<'src, 'a> {
     fn parse(&mut self) -> Node {
         self.src.match_curr(self.lhs);
 
